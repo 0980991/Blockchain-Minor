@@ -30,7 +30,7 @@ def sign(message, private_key):
     return signature
 
 def verify(message, signature, public_key):
-    message = bytes(str(message), 'utf-8')
+    message = bytes(str(message), 'utf-16')
     try:
         public_key.verify(
             signature,
