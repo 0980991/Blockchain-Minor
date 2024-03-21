@@ -1,5 +1,5 @@
 import hashlib
-import SQLite3
+import sqlite3
 
 class GCAccounts():
     def __init__(self):
@@ -17,9 +17,3 @@ class GCAccounts():
         b_string = my_string.encode('utf-8')
         str_hash = hashlib.sha256().update(b_string).hexdigest()
         return str_hash
-
-    # Update the hash object with the encoded string
-    sha256_hash.update(encoded_string)
-
-    # Get the hexadecimal representation of the hash
-    hashed_string = sha256_hash.hexdigest()
