@@ -32,7 +32,7 @@ class TxBlock (CBlock):
     # TODO 1: Initialize the block
     # Each block contains a list for the data and a hash value to previous block
     def __init__(self, previousBlock=None):
-        super(TxBlock, self).__init__([], previousBlock)
+        super(type(self), self).__init__([], previousBlock)
         self.data = []
         self.prevBlock = previousBlock
         self.prevHash = None
@@ -46,7 +46,8 @@ class TxBlock (CBlock):
     # and check the validity of other blocks in the chain to make the cchain tamper-proof
     # Expected return value is true or false
     def is_valid(self):
-        if not super(TxBlock, self).is_valid():
+        if not super(type(self), self).is_valid():
+            
             return False
         for tx in self.data:
             if not tx.is_valid():
