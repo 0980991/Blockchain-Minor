@@ -7,3 +7,4 @@ DAT file for non-db items
 Serialization using Pickle. Converting back to the original format only has to be done inthe verify functino. For the rest of the application, the serialized verison can be used.
 
 
+MIning reward and signup reward should be the same

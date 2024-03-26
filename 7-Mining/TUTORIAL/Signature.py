@@ -7,6 +7,7 @@ from cryptography.hazmat.primitives import serialization
 def generate_keys():
     private_key = rsa.generate_private_key(public_exponent=65537,key_size=2048)
     public_key = private_key.public_key()
+
     return private_key, public_key
 
 def serialize_keys(private_key, public_key):
@@ -30,8 +31,9 @@ def sign(message, private_key):
         )
     return signature
 
-def verify(message, signature, public_key):
+def verify(message, signature, pbc_ser):
     message = bytes(str(message), 'utf-8')
+    public_key = serialization.load_pem_public_key(pbc_ser)
     try:
         public_key.verify(
             signature,
@@ -44,5 +46,5 @@ def verify(message, signature, public_key):
     except InvalidSignature:
          return False
     except:
-        print('Error executing public_key.verify')
+        print("Error executing 'public_key.verify'")
         return False
