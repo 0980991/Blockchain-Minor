@@ -1,4 +1,5 @@
 import cmd
+import os
 import sys
 class CMDWrapper(cmd.Cmd):
     def __init__(self):
@@ -15,6 +16,9 @@ class CMDWrapper(cmd.Cmd):
 
     def do_exit(self, arg):
         sys.exit()
+
+    def do_clear(self, arg):
+        os.system('cls' if os.name == 'nt' else 'clear')
 
     def do_1(self, arg):
         print("Function: 1")

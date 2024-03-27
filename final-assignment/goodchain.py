@@ -1,26 +1,24 @@
 import random as r
+import os
 import sys
 from GCAccounts import GCAccounts
 from GCUser import GCUser
 from CMDWrapper import CMDWrapper
+import colorama
+
 
 class GoodChainApp(CMDWrapper):
 
     def __init__(self):
         super().__init__()
-        # self.intro = "hello"
         CMDWrapper.__init__(self)
         self.accounts = GCAccounts()
         self.accounts.users.append(GCUser("jack", self.accounts.encrypt_string("q", "jack")))
-        self.options = [
-            ['Login', "use `login` to login to your a6ccount."],
-            ['Explore the Blockchain', 'Use `explore` to view the current blockchain.'],
-            ['Sign Up', 'Use `signup` to create a new account.'],
-            ['Exit', 'Use `exit` to quit the application.']
-        ]
         self.logged_in = False
-        for i, opt in enumerate(self.options):
-            print(f"{i+1}. {opt[0]} - {opt[1]}")
+        self.options = None
+        self.set_menu_options()
+        self.print_options()
+
 
     def do_exit(self, args):
         sys.exit()
@@ -30,44 +28,88 @@ class GoodChainApp(CMDWrapper):
         print("The Good Chain: ")
         input("Press enter to continue")
 
+    def do_help(self, args):
+        print("Help deez nuts from drying out")
+        pass
+
     def do_login(self, args):
         args_list = args.split(" ")
         if len(args_list) > 1:
             username = args_list[0]
             pwd = args_list[1]
-            user = self.accounts.login(username, pwd)
+            user = self.accounts.validate_account(username, pwd)
             if user is not None:
                 self.user = user
                 self.prompt = f"({user.username})> "
                 self.logged_in = True
-
-        print("Login Failed")
-        if len(args_list) == 1:
-            print("Please enter a password.")
+                self.set_menu_options()
+                print("\n[+] Login Sucessful!\n")
+                return
+            else:
+                print("Login Failed! You've entered an incorrect username or password.\n")
+                return
+        if len(args_list) == 1 and args_list[0] != "":
+            print("Login Failed! Please enter a password.\n")
         else:
-            print("Please enter a username and password.")
-        return None
+            print("Login Failed! Please enter a username and password.\n")
+        return
 
     def do_logout(self, args):
-        self.user
+        self.user = None
+        self.prompt = "(guest)> "
+        self.logged_in = False
+        print("\n[+] Logged Out!\n")
+        self.set_menu_options()
+
+
+    def do_show(self, args):
+        self.print_options()
+
+    def do_signup(self, args):
+        # Your signup logic here
+        
+        print("Signup function called")
 
     def get_names(self):
         func_names = super().get_names()
+        if self.logged_in:
+            names.remove("do_login")
+            names.remove("do_signup")
         if not self.logged_in:
             names.remove("do_logout")
+            names.remove
 
     def explore_blockchain(self):
         # Your explore blockchain logic here
         print("Explore the Blockchain function called")
 
+    def print_options(self,):
+        for i, opt in enumerate(self.options):
+            print(f"{i+1}. {opt[0]} - {opt[1]}")
 
-    def do_signup(self, args):
-        # Your signup logic here
-        print("Signup function called")
+    def set_menu_options(self):
+        if self.logged_in:
+            self.options = [
+                ['Explore the Blockchain', 'Use `explore` to view the current blockchain.'],
+                ["Transfer Coins", "Use `transfer` to transfer your coins to an address."],
+                ["Check Balance", "Use `balance` to view your current balance."],
+                ["Transaction Pool", "Use `pool` to view the current transaction pool"],
+                ["Your Pending Transactions", "Use `pending` to manage your current pending transactions."],
+                ["Mine a Block", "Use `mine` to mine a new block."],
+                ["Logout", "Use `logout` to logout of the application"],
+                ["Exit", "Use `exit` to logout and quit the application."]
+            ]
+        else:
+            self.options = [
+                ['Login', "Use `login` to login to your account."],
+                ['Explore the Blockchain', 'Use `explore` to view the current blockchain.'],
+                ['Sign Up', 'Use `signup` to create a new account.'],
+                ['Exit', 'Use `exit` to quit the application.']
+            ]
 
 def get_banner():
     banners = []
-    with open(".\\final-assignment\\banners.txt", 'r', encoding='utf-16le') as file:
+    with open(".\\banners.txt", 'r', encoding='utf-16le') as file:
         banners_text = file.read()
         banners = banners_text.split('\n,\n')
     return ""

@@ -6,7 +6,7 @@ class GCAccounts():
     def __init__(self):
         self.users = []
 
-    def login(self, username, password):
+    def validate_account(self, username, password):
         # Declaring our password
 
         # Adding the salt to password
@@ -17,6 +17,9 @@ class GCAccounts():
                     return user
                 break
         return None
+
+    def load_users(self,)
+
 
     def encrypt_string(self, string, salt):
         pwd = string + salt
