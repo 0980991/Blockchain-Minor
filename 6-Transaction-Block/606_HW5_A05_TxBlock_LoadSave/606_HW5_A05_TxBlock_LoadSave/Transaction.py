@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-""" 
+"""
 The goal of this exercise is to complete the transaction module.
 In this exercise you need to add a __repr__() function that will be used
-to show the details of transaction. 
+to show the details of transaction.
 
 Your task is to:
     * locate the TODOs in this file
-    * complete the missing part from the code 
+    * complete the missing part from the code
     * run the test of this exercise located in same folder.
 
 To test run 'TxBlock_t.py' in your command line
@@ -42,7 +42,7 @@ class Tx:
         message = self.__gather()
         newsig = sign(message, private)
         self.sigs.append(newsig)
-               
+
     def is_valid(self):
         total_in = 0
         total_out = 0

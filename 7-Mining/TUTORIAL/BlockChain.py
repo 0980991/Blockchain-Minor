@@ -25,7 +25,7 @@ class CBlock:
                 return True
             else:
                 return False
-        current_block_validity = self.blockHash == self.computeHash()
-        compute_hash = self.computeHash()
-        prev_block_validity = self.previousBlock.is_valid()
-        return current_block_validity and prev_block_validity
+        else:
+            current_block_validity = self.blockHash == self.computeHash()
+            prev_block_validity = self.previousBlock.is_valid()
+            return current_block_validity and prev_block_validity

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """
 This test case will verify if the provided solution by a student for TxBlock.py is correct.
-In this test scenario 6 blocks will be created (1 genesis and 5 child blocks). 
-A total of 8 transactions will be created. 
-Tempering the data on block b1 by adding a valid transaction to it should be detected. 
+In this test scenario 6 blocks will be created (1 genesis and 5 child blocks).
+A total of 8 transactions will be created.
+Tempering the data on block b1 by adding a valid transaction to it should be detected.
 In addition, Transaction should be printed formmated and human-readable. You shoud add a method
 to transaction file to represent a transaction in the desired format.
 
@@ -18,7 +18,7 @@ from cryptography.hazmat.backends import default_backend
 
 # from Transaction import Tx
 
-from TxBlock import *       
+from TxBlock import *
 
 
 if __name__ == "__main__":
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     Tx3.add_input(rose_pbc,1.1)
     Tx3.add_output(alex_pbc, 1)
     Tx3.sign(rose_prv)
-    
+
     Tx4 = Tx()
     Tx4.add_input(mike_pbc,1)
     Tx4.add_output(mara_pbc, 1)
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # Invalid Blocks
     ######################
-    # Creat an invalid transaction Tx6 
+    # Creat an invalid transaction Tx6
     Tx6 = Tx()
     Tx6.add_input(mara_pbc, 2.0)
     Tx6.add_output(rose_pbc, 15.3)
@@ -124,6 +124,6 @@ if __name__ == "__main__":
             print("Error! Invalid block is verified.")
         else:
             print("Success! Invalid blocks is detected.")
-    
+
     print('Tx4\n', Tx4)
     print('Tx5\n', Tx5)
