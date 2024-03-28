@@ -1,26 +1,24 @@
 import os
 from numpy import append
-import side_by_side as sbs
-from Deck import Deck
 
-def optionsMenu(header, options):
+def optionsMenu(header, options, prompt):
     # Input: List of options
     # Output: Index + 1 of the option that the user selected
     # Output: -1 if the user wants to go back in the menu
     # Makes sure that invalid input gets cancelled
     optionsMenuHeader(header)
-    for i in range(len(options)):
-        print(str(i+1)+'.',options[i])
-    choice = input()
+    for i, option in enumerate(options):
+        print(f"{i+1}. {option[1]}")
+    choice = input(prompt)
     if choice == 'b':
         return -1
     try:
         while int(choice) not in range(len(options)+1) or int(choice) == 0:
             print("\nInvalid option. Please try again. (1 - %s)" % len(options))
-            choice = input()
+            choice = input(prompt)
     except ValueError:
         int("\nInvalid option. Please try again. (1 - %s)" % len(options))
-        choice = input()
+        choice = input(prompt)
     return int(choice)
 
 def yesNoInput(question='', default_yes=True):
