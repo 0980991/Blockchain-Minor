@@ -18,14 +18,13 @@ class GCAccounts():
                 break
         return None
 
-    def load_users(self,)
-
+    def load_users(self):
+        pass
 
     def encrypt_string(self, string, salt):
         pwd = string + salt
         hashed_pw = hashlib.md5(pwd.encode('utf-8'))
         return hashed_pw.hexdigest()
-
 
     def hash_string(self, string):
         b_string = string.encode('utf-8')

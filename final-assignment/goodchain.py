@@ -21,6 +21,8 @@ class GoodChainApp(CMDWrapper):
 
 
     def do_exit(self, args):
+        if self.logged_in:
+            self.y_N_Input("Are you sure you want Logout and Quit the application?")
         sys.exit()
 
 
@@ -33,51 +35,52 @@ class GoodChainApp(CMDWrapper):
         pass
 
     def do_login(self, args):
-        args_list = args.split(" ")
-        if len(args_list) > 1:
-            username = args_list[0]
-            pwd = args_list[1]
-            user = self.accounts.validate_account(username, pwd)
-            if user is not None:
-                self.user = user
-                self.prompt = f"({user.username})> "
-                self.logged_in = True
-                self.set_menu_options()
-                print("\n[+] Login Sucessful!\n")
-                return
+        if not self.logged_in:
+            args_list = args.split(" ")
+            if len(args_list) > 1:
+                username = args_list[0]
+                pwd = args_list[1]
+                user = self.accounts.validate_account(username, pwd)
+                if user is not None:
+                    self.user = user
+                    self.prompt = f"({user.username})> "
+                    self.logged_in = True
+                    self.set_menu_options()
+                    print("\n[+] Login Sucessful!\n")
+                    return
+                else:
+                    print("Login Failed! You've entered an incorrect username or password.\n")
+                    return
+            if len(args_list) == 1 and args_list[0] != "":
+                print("Login Failed! Please enter a password.\n")
             else:
-                print("Login Failed! You've entered an incorrect username or password.\n")
-                return
-        if len(args_list) == 1 and args_list[0] != "":
-            print("Login Failed! Please enter a password.\n")
+                user_credentials = self.readUserInput(["Enter a username:", "Enter a password:"])
+                if user_credentials == []:
+                    return
+                else:
+                    
+            return
         else:
-            print("Login Failed! Please enter a username and password.\n")
-        return
+            print("*** Unknown syntax: login")
 
     def do_logout(self, args):
-        self.user = None
-        self.prompt = "(guest)> "
-        self.logged_in = False
-        print("\n[+] Logged Out!\n")
-        self.set_menu_options()
-
+        if self.logged_in:
+            self.user = None
+            self.prompt = "(guest)> "
+            self.logged_in = False
+            print("\n[+] Logged Out!\n")
+            self.set_menu_options()
+        else:
+            print("*** Unknown syntax: logout")
 
     def do_show(self, args):
         self.print_options()
 
     def do_signup(self, args):
         # Your signup logic here
-        
-        print("Signup function called")
-
-    def get_names(self):
-        func_names = super().get_names()
-        if self.logged_in:
-            names.remove("do_login")
-            names.remove("do_signup")
         if not self.logged_in:
-            names.remove("do_logout")
-            names.remove
+
+        print("Signup function called")
 
     def explore_blockchain(self):
         # Your explore blockchain logic here
@@ -107,9 +110,35 @@ class GoodChainApp(CMDWrapper):
                 ['Exit', 'Use `exit` to quit the application.']
             ]
 
+    def readUserInput(questionList):
+        user_input = []
+        for i, question in enumerate(questionList):
+            user_input.append(input('(Press b to go back)\n\n' + question + '\n')) ## The char escape functie zou hier aangeroepen kunnen worden
+            while user_input[i] == '':
+                print('This field cannot be empty')
+                user_input.pop() # Removes the empty space added to list
+                user_input.append(input('(Press b go back)\n\n' + question + '\n'))
+            if user_input[i] == 'b':
+                return []
+        return user_input
+
+    def y_N_Input(question='', default_yes=True):
+            if default_yes:
+                question += ' (Y/n)\n'
+            else:
+                question += ' (y/N)\n'
+            user_input = input(question)
+
+            while user_input not in ['Y', 'N', 'y', 'n', '']:
+                user_input = input('Invalid input please enter y or n\n')
+
+            if user_input == 'Y' or user_input == 'y' or (user_input == '' and default_yes):
+                return True
+            return False
+
 def get_banner():
     banners = []
-    with open(".\\banners.txt", 'r', encoding='utf-16le') as file:
+    with open(".\\final-assignment\\banners.txt", 'r', encoding='utf-16le') as file:
         banners_text = file.read()
         banners = banners_text.split('\n,\n')
     return ""
