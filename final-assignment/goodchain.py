@@ -6,6 +6,8 @@ from GCUser import GCUser
 import colorama
 from helper_functions import HelperFunctions
 from DbInterface import DbInterface as dbi
+import GCTx
+import Transaction
 
 
 class GoodChainApp():
@@ -21,7 +23,6 @@ class GoodChainApp():
         while True:
             choice = self.hf.optionsMenu("Welcome to the GoodChain application.\nWhat would you like to do?", self.options)
             self.options[choice][0]()
-
 
     def exit(self):
         if self.logged_in:
@@ -60,6 +61,7 @@ class GoodChainApp():
                             return
                     else:
                         try_again = False
+
     def sign_up(self):
         user_credentials = self.hf.readUserInput(["Enter a username:", "Enter a password:"])
         # Check if user exits!
@@ -73,10 +75,6 @@ class GoodChainApp():
                 self.login()
         else:
             self.hf.enterToContinue("This username has already been taken!")
-
-    def explore_blockchain(self):
-        # Your explore blockchain logic here
-        print("Explore the Blockchain function called")
 
     def set_menu_options(self):
         if self.logged_in:
@@ -97,6 +95,7 @@ class GoodChainApp():
                 [self.sign_up, "Sign Up"],
                 [self.exit,"Exit"]
             ]
+
     def logout(self):
         if self.logged_in:
             self.user = None
@@ -108,13 +107,17 @@ class GoodChainApp():
             print("*** Unknown syntax: logout")
 
     def transfer(self):
-        pass
+        amount,self.hf.readUserInput(["Enter the username or wallet address of the receiver", "Please enter the amount you would like to transfer"])
+
     def check_balance(self):
         pass
+
     def transaction_pool(self):
         pass
+
     def user_transactions(self):
         pass
+
     def mine(self):
         pass
 
