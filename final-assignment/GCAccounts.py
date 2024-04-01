@@ -13,7 +13,7 @@ class GCAccounts():
         # Adding the salt to password
 
         for user in self.users:
-            if self.user_exists(username):
+            if self.userExists(username):
                 return user
                 break
         return None
@@ -22,7 +22,7 @@ class GCAccounts():
         users = self.user_db.getAllUsers()
         for user in users:
             self.users.append(GCUser())
-    def user_exists(self, username):
+    def userExists(self, username):
         for user in self.users:
             if user.username.lower() == username.lower():
                 return True

@@ -17,7 +17,7 @@ class GoodChainApp():
         self.accounts = GCAccounts()
         self.logged_in = False
         self.options = None
-        self.set_menu_options()
+        self.setMenuOptions()
 
     def start(self):
         while True:
@@ -33,10 +33,6 @@ class GoodChainApp():
         print("The Good Chain: ")
         self.hf.enterToContinue("")
 
-    def help(self):
-        print("Help deez nuts from drying out")
-        pass
-
     def login(self):
         user_credentials = self.hf.readUserInput(["Enter your username:", "Enter your password:"])
         if user_credentials == []:
@@ -51,7 +47,7 @@ class GoodChainApp():
                     self.user = user
                     self.hf.prompt = f"({user.username})> "
                     self.logged_in = True
-                    self.set_menu_options()
+                    self.setMenuOptions()
                     self.hf.enterToContinue("\n[+] Login Sucessful!\n")
                     return
                 else:
@@ -62,21 +58,34 @@ class GoodChainApp():
                     else:
                         try_again = False
 
-    def sign_up(self):
+    def logout(self):
+        if self.logged_in:
+            self.user = None
+            # self.hf.prompt = "(guest)> "
+            self.logged_in = False
+            print("\n[+] Logged Out!\n")
+            self.setMenuOptions()
+        else:
+            print("*** Unknown syntax: logout")
+
+    def signUp(self):
         user_credentials = self.hf.readUserInput(["Enter a username:", "Enter a password:"])
-        # Check if user exits!
         username = user_credentials[0]
-        if not self.accounts.user_exists(username):
+        if not self.accounts.userExists(username):
             hashed_pw = self.accounts.hash_string(user_credentials[1])
             new_user = GCUser(username, hashed_pw)
             self.accounts.users.append(GCUser(user_credentials[0], user_credentials[1]))
             dbi.insertUser(new_user)
+            reward_tx = GCTx(["REWARD", "50"])
+            ## Generate Reward Tx
+            ######################
+
             if self.hf.yesNoInput("\n[+] Login Sucessful!\nDo you want to login now?"):
                 self.login()
         else:
             self.hf.enterToContinue("This username has already been taken!")
 
-    def set_menu_options(self):
+    def setMenuOptions(self):
         if self.logged_in:
             self.options = [
                 [self.explore, "Explore the Blockchain"],
@@ -92,30 +101,20 @@ class GoodChainApp():
             self.options = [
                 [self.login, "Login"],
                 [self.explore, "Explore the Blockchain"],
-                [self.sign_up, "Sign Up"],
+                [self.signUp, "Sign Up"],
                 [self.exit,"Exit"]
             ]
-
-    def logout(self):
-        if self.logged_in:
-            self.user = None
-            # self.hf.prompt = "(guest)> "
-            self.logged_in = False
-            print("\n[+] Logged Out!\n")
-            self.set_menu_options()
-        else:
-            print("*** Unknown syntax: logout")
 
     def transfer(self):
         amount,self.hf.readUserInput(["Enter the username or wallet address of the receiver", "Please enter the amount you would like to transfer"])
 
-    def check_balance(self):
+    def checkBalance(self):
         pass
 
-    def transaction_pool(self):
+    def viewTransactionPool(self):
         pass
 
-    def user_transactions(self):
+    def userTransactions(self):
         pass
 
     def mine(self):

@@ -8,3 +8,5 @@ Serialization using Pickle. Converting back to the original format only has to b
 
 
 MIning reward and signup reward should be the same
+
+The miner gets both the mining reward + gasfees
