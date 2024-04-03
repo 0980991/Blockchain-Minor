@@ -33,6 +33,7 @@ class GCAccounts():
         encrypted_pw = hashlib.md5(pwd.encode('utf-8'))
         return encrypted_pw.hexdigest()
 
+    @classmethod
     def hash_string(self, string):
         b_string = string.encode('utf-8')
         str_hash = hashlib.sha256()

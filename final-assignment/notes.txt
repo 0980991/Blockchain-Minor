@@ -4,7 +4,7 @@
     - Check if the user exists
 5-10 transactions per block including the transaction which is the reward for mining the block (might be in the next blockt though)
 DAT file for non-db items
-Serialization using Pickle. Converting back to the original format only has to be done inthe verify functino. For the rest of the application, the serialized verison can be used.
+Serialization using Pickle. Converting back to the original format only has to be done in the verify function. For the rest of the application, the serialized verison can be used.
 
 
 MIning reward and signup reward should be the same

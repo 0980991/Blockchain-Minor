@@ -6,8 +6,9 @@ from GCUser import GCUser
 import colorama
 from helper_functions import HelperFunctions
 from DbInterface import DbInterface as dbi
-import GCTx
+from GCTx import GCTx
 import Transaction
+from TxPool import TxPool
 
 
 class GoodChainApp():
@@ -15,7 +16,9 @@ class GoodChainApp():
     def __init__(self):
         self.hf = HelperFunctions()
         self.accounts = GCAccounts()
+        self.tx_pool = TxPool()
         self.logged_in = False
+        self.user = None
         self.options = None
         self.setMenuOptions()
 
@@ -72,13 +75,13 @@ class GoodChainApp():
         user_credentials = self.hf.readUserInput(["Enter a username:", "Enter a password:"])
         username = user_credentials[0]
         if not self.accounts.userExists(username):
-            hashed_pw = self.accounts.hash_string(user_credentials[1])
+                
             new_user = GCUser(username, hashed_pw)
             self.accounts.users.append(GCUser(user_credentials[0], user_credentials[1]))
+
             dbi.insertUser(new_user)
-            reward_tx = GCTx(["REWARD", "50"])
-            ## Generate Reward Tx
-            ######################
+
+            self.tx_pool.add(GCTx(("REWARD", 50), (new_user.public_key, 50)))
 
             if self.hf.yesNoInput("\n[+] Login Sucessful!\nDo you want to login now?"):
                 self.login()
@@ -115,7 +118,7 @@ class GoodChainApp():
         pass
 
     def userTransactions(self):
-        pass
+        user_transactions = self.tx_pool.getUserTransactions(self.user.public_key)
 
     def mine(self):
         pass

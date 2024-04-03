@@ -4,12 +4,13 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.primitives.asymmetric import padding
 from cryptography.hazmat.primitives import serialization
 
-def generate_keys():
+def generateKeys():
     private_key = rsa.generate_private_key(public_exponent=65537,key_size=2048)
     public_key = private_key.public_key()
+
     return private_key, public_key
 
-def serialize_keys(private_key, public_key):
+def serializeKeys(private_key, public_key):
     pem_private_key = private_key.private_bytes(
         encoding=serialization.Encoding.PEM,
         format=serialization.PrivateFormat.PKCS8,
@@ -20,6 +21,11 @@ def serialize_keys(private_key, public_key):
         format=serialization.PublicFormat.SubjectPublicKeyInfo
     )
     return pem_private_key, pem_public_key
+
+def deserializeKeys(pem_private_key, pem_public_key):
+    private_key = serialization.load_pem_private_key(pem_private_key, password=None, backend=default_backend())
+    public_key = serialization.load_pem_public_key(pem_public_key, backend=default_backend())
+    return private_key, public_key
 
 def sign(message, private_key):
     message = bytes(str(message), 'utf-8')

@@ -1,6 +1,9 @@
+import itertools
 
 class GCTx:
+    id_obj = itertools.count()
     def __init__(self, inputs=None, outputs=None):
+        self.id = next(GCTx.id_obj)
         self.inputs = inputs
         self.outputs = outputs
         self.sigs = None
@@ -9,10 +12,10 @@ class GCTx:
     def __repr__(self):
         string = "INPUTS:\n"
         for inp in self.inputs:
-            string += f"{inp[1]} from {inp[0]}\n"
+            string += f"{str(inp[1])} from {inp[0]}\n"
         string += "OUTPUTS:\n"
         for out in self.outputs:
-            string += f"{out[1]} from {out[0]}\n"
+            string += f"{str(out[1])} from {out[0]}\n"
         string += "EXTRA REQUIRED SIGNATURES:\n"
         for sig in self.reqd:
             string += f"{sig}"

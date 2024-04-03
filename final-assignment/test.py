@@ -1,14 +1,37 @@
 import DbInterface as dbi
 from GCUser import GCUser
-db = dbi.DbInterface()
-db.deleteUser("q")
-db.deleteUser("Maurice")
-db.deleteUser("Joe")
-db.insertUser(GCUser("q", "q"))
-db.insertUser(GCUser("Maurice", "qwerty"))
-db.insertUser(GCUser("Joe", "Biden"))
-users=db.getAllUsers()
-new = []
-for user in users:
-    new.append(GCUser(user[0], user[1], user[2], user[3]))
-pass
+from TxPool import TxPool
+from GCTx import GCTx
+from GCAccounts import GCAccounts
+
+hashed_pw = GCAccounts.hash_string("password123")
+joe = GCUser("JOE", hashed_pw)
+mark = GCUser("MARK", hashed_pw)
+shane = GCUser("SHANE", hashed_pw)
+
+
+txp = TxPool()
+Tx1 = GCTx([("REWARD", 50)], [(joe.pem_public_key, 50)])
+Tx2 = GCTx([(joe.pem_public_key, 30)], [(mark.pem_public_key, 30)])
+Tx3 = GCTx([(joe.pem_public_key, 20)], [(shane.pem_public_key, 20)])
+
+txp.add(Tx1)
+txp.add(Tx2)
+txp.add(Tx3)
+for tx in txp.transactions:
+    print(f"Tx [{tx.id}]: {tx.inputs[0][0]}: {tx.inputs[0][1]}")
+
+txp.storePool()
+txp.restorePool()
+
+
+txp.remove(1)
+
+for tx in txp.transactions:
+    print(f"Tx [{tx.id}]: {tx.inputs[0][0]}: {tx.inputs[0][1]}")
+
+txp.clear()
+
+for tx in txp.transactions:
+    print(f"Tx [{tx.id}]: {tx.inputs[0][0]}: {tx.inputs[0][1]}")
+
