@@ -8,7 +8,7 @@
             "name": "Python Debugger: Current File",
             "type": "python",
             "request": "launch",
-            "program": "test.py",
+            "program": "goodchain.py",
             "console": "integratedTerminal"
 
         }

@@ -6,23 +6,33 @@ class GCAccounts():
     def __init__(self):
         self.users = []
         self.user_db = dbi.DbInterface()
-        self.load_users()
+        self.loadUsers()
 
-    def validate_account(self, username, password):
+
+    # def idPublicKey(self, pem_public_key):
+    #     """ Get a username from a serialized public key"""
+    #     for user in self.users:
+    #         if user.pem_public_key == pem_public_key:
+    #             return user.username
+
+    #     return ""
+
+    def validateAccount(self, username, password):
         # Declaring our password
 
         # Adding the salt to password
-
         for user in self.users:
-            if self.userExists(username):
-                return user
+            if user.username.lower() == username.lower():
+                if user.pw_hash == self.encrypt_string(password, username):
+                    return user
                 break
         return None
 
-    def load_users(self):
+    def loadUsers(self):
         users = self.user_db.getAllUsers()
         for user in users:
             self.users.append(GCUser(user[0], user[1], user[2], user[3]))
+
     def userExists(self, username):
         for user in self.users:
             if user.username.lower() == username.lower():

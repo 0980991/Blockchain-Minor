@@ -7,7 +7,6 @@ import colorama
 from helper_functions import HelperFunctions
 from DbInterface import DbInterface as dbi
 from GCTx import GCTx
-import Transaction
 from TxPool import TxPool
 
 
@@ -17,6 +16,7 @@ class GoodChainApp():
         self.hf = HelperFunctions()
         self.accounts = GCAccounts()
         self.tx_pool = TxPool()
+        self.tx_pool.load()
         self.logged_in = False
         self.user = None
         self.options = None
@@ -31,6 +31,8 @@ class GoodChainApp():
         if self.logged_in:
             if self.hf.yesNoInput("Are you sure you want Logout and Quit the application?"):
                 sys.exit()
+            return
+        sys.exit()
 
     def explore(self):
         print("The Good Chain: ")
@@ -45,7 +47,7 @@ class GoodChainApp():
             if not self.logged_in:
                 username = user_credentials[0]
                 pwd = user_credentials[1]
-                user = self.accounts.validate_account(username, pwd)
+                user = self.accounts.validateAccount(username, pwd)
                 if user is not None:
                     self.user = user
                     self.hf.prompt = f"({user.username})> "
@@ -62,26 +64,28 @@ class GoodChainApp():
                         try_again = False
 
     def logout(self):
-        if self.logged_in:
-            self.user = None
-            # self.hf.prompt = "(guest)> "
-            self.logged_in = False
-            print("\n[+] Logged Out!\n")
-            self.setMenuOptions()
-        else:
-            print("*** Unknown syntax: logout")
+
+        self.user = None
+        self.hf.prompt = "(guest)> "
+        self.logged_in = False
+        print("\n[+] Logged Out!\n")
+        self.setMenuOptions()
+
 
     def signUp(self):
         user_credentials = self.hf.readUserInput(["Enter a username:", "Enter a password:"])
+        if user_credentials == []:
+            input("Login canceled!")
+            return
         username = user_credentials[0]
         if not self.accounts.userExists(username):
-                
+            hashed_pw = self.accounts.hash_string(user_credentials[1])
             new_user = GCUser(username, hashed_pw)
-            self.accounts.users.append(GCUser(user_credentials[0], user_credentials[1]))
+            self.accounts.users.append(new_user)
 
             dbi.insertUser(new_user)
 
-            self.tx_pool.add(GCTx(("REWARD", 50), (new_user.public_key, 50)))
+            self.tx_pool.add(GCTx([("REWARD", 50)], [(new_user.pem_public_key, 50)]))
 
             if self.hf.yesNoInput("\n[+] Login Sucessful!\nDo you want to login now?"):
                 self.login()
@@ -93,9 +97,9 @@ class GoodChainApp():
             self.options = [
                 [self.explore, "Explore the Blockchain"],
                 [self.transfer, "Transfer Coins"],
-                [self.check_balance, "Check Balance"],
-                [self.transaction_pool, "Transaction Pool"],
-                [self.user_transactions, "Your Pending Transactions"],
+                [self.checkBalance, "Check Balance"],
+                [self.viewTransactionPool, "Transaction Pool"],
+                [self.userTransactions, "Your Pending Transactions"],
                 [self.mine, "Mine a Block"],
                 [self.logout, "Logout"],
                 [self.exit, "Exit"],
@@ -115,7 +119,7 @@ class GoodChainApp():
         pass
 
     def viewTransactionPool(self):
-        pass
+        print(self.tx_pool)
 
     def userTransactions(self):
         user_transactions = self.tx_pool.getUserTransactions(self.user.public_key)

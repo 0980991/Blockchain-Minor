@@ -15,5 +15,6 @@ class GCUser:
         else:
             self.public_key = public_key
 
+
     def __str__(self):
         return f"User {username}:\n{20*'='}\n{self.pem_public_key}"

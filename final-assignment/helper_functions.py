@@ -36,7 +36,7 @@ class HelperFunctions:
     def yesNoInput(self, question='', default_yes=True, clear=True):
         if clear:
             self.clear()
-        
+
         if default_yes:
             question += ' (Y/n)\n'
         else:

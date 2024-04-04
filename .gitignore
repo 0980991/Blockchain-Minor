@@ -1,2 +1,13 @@
 
 *.pyc
+final-assignment/__pycache__/GCAccounts.cpython-312.pyc
+final-assignment/__pycache__/GCAccounts.cpython-37.pyc
+final-assignment/__pycache__/GCTx.cpython-312.pyc
+final-assignment/__pycache__/GCTx.cpython-37.pyc
+final-assignment/__pycache__/GCUser.cpython-312.pyc
+final-assignment/__pycache__/GCUser.cpython-37.pyc
+final-assignment/__pycache__/helper_functions.cpython-312.pyc
+final-assignment/__pycache__/helper_functions.cpython-37.pyc
+final-assignment/__pycache__/Signature.cpython-312.pyc
+final-assignment/__pycache__/TxPool.cpython-312.pyc
+final-assignment/__pycache__/TxPool.cpython-37.pyc

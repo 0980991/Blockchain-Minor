@@ -1,4 +1,5 @@
 import itertools
+import Signature as s
 
 class GCTx:
     id_obj = itertools.count()
@@ -6,23 +7,25 @@ class GCTx:
         self.id = next(GCTx.id_obj)
         self.inputs = inputs
         self.outputs = outputs
-        self.sigs = None
-        self.reqd = None
+        self.sigs = []
+        self.reqd = []
 
     def __repr__(self):
         string = "INPUTS:\n"
         for inp in self.inputs:
+            # username = GCAccounts.idPublicKey(inp[0])
             string += f"{str(inp[1])} from {inp[0]}\n"
         string += "OUTPUTS:\n"
         for out in self.outputs:
+            # username = GCAccounts.idPublicKey(out[0])
             string += f"{str(out[1])} from {out[0]}\n"
         string += "EXTRA REQUIRED SIGNATURES:\n"
         for sig in self.reqd:
             string += f"{sig}"
-        string += "SIGNATURES:"
+        string += "SIGNATURES:\n"
         for sig in self.sigs:
             string += f"{sig}\n"
-        string += "END"
+        string += "END\n"
         return string
 
     def addInput(self, from_addr, amount):
@@ -34,9 +37,16 @@ class GCTx:
     def addReqd(self, sig):
         self.reqd.append(sig)
 
+    def collect_transaction_data(self):
+        tx_data=[]
+        tx_data.append(self.inputs)
+        tx_data.append(self.outputs)
+        tx_data.append(self.reqd)
+        return str(tx_data).encode('utf-8')
+
     def sign(self, private_key):
-        message = self.__gather()
-        newsig = sign(message, private)
+        message = self.collectTxData()
+        newsig = s.sign(message, private_key)
         self.sigs.append(newsig)
 
     def collectTxData(self):
