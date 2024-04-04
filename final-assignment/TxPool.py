@@ -40,5 +40,7 @@ class TxPool():
         fh.close()
 
     def __str__(self):
+        tx_str = ""
         for tx in self.transactions:
-            print(tx)
+            tx_str += 20*"=" + tx + "\n"
+        return tx_str

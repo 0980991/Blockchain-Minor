@@ -1,19 +1,24 @@
 import Signature
 
 class GCUser:
-    def __init__(self, username, pw_hash, private_key=None, public_key=None):
+    def __init__(self, username, pw_hash, pem_private_key=None, pem_public_key=None):
         self.username = username
         self.pw_hash = pw_hash
-        # Get Public Key
-        if private_key is None:
-            self.private_key, self.public_key = Signature.generateKeys()
+
+        if pem_private_key is None:
+            self.private_key = Signature.generatePrivateKey()
+            self.pem_private_key = Signature.serializePrivateKey(self.private_key)
         else:
-            self.private_key = private_key
-        # Get Private Key
-        if public_key is None:
-            self.pem_private_key, self.pem_public_key = Signature.serializeKeys(self.private_key, self.public_key)
+            self.pem_private_key = pem_private_key
+            self.private_key = Signature.deserializePrivateKey(pem_private_key)
+
+        if pem_public_key is None:
+            self.public_key = Signature.generatePublicKey(self.private_key)
+            self.pem_public_key = Signature.serializePublicKey(self.public_key)
         else:
-            self.public_key = public_key
+            self.pem_public_key = pem_public_key
+            self.public_key = Signature.deserializePublicKey(pem_public_key)
+
 
 
     def __str__(self):

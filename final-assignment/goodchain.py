@@ -47,7 +47,9 @@ class GoodChainApp():
             if not self.logged_in:
                 username = user_credentials[0]
                 pwd = user_credentials[1]
-                user = self.accounts.validateAccount(username, pwd)
+                pw_hash = self.accounts.hash_string(user_credentials[1])
+
+                user = self.accounts.validateAccount(username, pw_hash)
                 if user is not None:
                     self.user = user
                     self.hf.prompt = f"({user.username})> "
@@ -64,13 +66,11 @@ class GoodChainApp():
                         try_again = False
 
     def logout(self):
-
         self.user = None
         self.hf.prompt = "(guest)> "
         self.logged_in = False
         print("\n[+] Logged Out!\n")
         self.setMenuOptions()
-
 
     def signUp(self):
         user_credentials = self.hf.readUserInput(["Enter a username:", "Enter a password:"])
@@ -87,10 +87,11 @@ class GoodChainApp():
 
             self.tx_pool.add(GCTx([("REWARD", 50)], [(new_user.pem_public_key, 50)]))
 
-            if self.hf.yesNoInput("\n[+] Login Sucessful!\nDo you want to login now?"):
+            if self.hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
         else:
             self.hf.enterToContinue("This username has already been taken!")
+
 
     def setMenuOptions(self):
         if self.logged_in:
@@ -113,13 +114,24 @@ class GoodChainApp():
             ]
 
     def transfer(self):
-        amount,self.hf.readUserInput(["Enter the username or wallet address of the receiver", "Please enter the amount you would like to transfer"])
+        try:
+            username, amount, gasfee = self.hf.readUserInput(["Enter the username of the receiver", "Please enter the amount you would like to transfer", "Please enter the gasfee amount."])
+        except ValueError:
+            # User canceled and the function returned an empty list.
+            return
+        public_key_receiver = self.accounts.publicKeyFromUsername(username)
+        send_amount = int(amount)
+        gasfee = int(gasfee)
+        receive_amount = send_amount - gasfee
+        self.tx_pool.add(GCTx([(self.user.username, send_amount)], [(public_key_receiver, receive_amount)]))
+
 
     def checkBalance(self):
         pass
 
     def viewTransactionPool(self):
         print(self.tx_pool)
+        self.hf.enterToContinue()
 
     def userTransactions(self):
         user_transactions = self.tx_pool.getUserTransactions(self.user.public_key)

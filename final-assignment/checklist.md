@@ -8,7 +8,7 @@
 
 [ ] A user can add a new block to the chain if the block is successfully mined.
 
-[ ] When a transaction is created by a user, the transaction will be placed in a transactions pool.
+[ ] When a **trans**action is created by a user, the transaction will be placed in a transactions pool.
 
 [ ] A user can always check the validation of the whole chain.
 

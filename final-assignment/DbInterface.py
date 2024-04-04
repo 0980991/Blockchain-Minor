@@ -25,7 +25,7 @@ class DbInterface:
     def insertUser(self, user):
         db = sqlite3.connect('GoodChain.db')
         cursor = db.cursor()
-        cursor.execute(f'INSERT INTO Accounts (user_name, password, private_key, public_key) VALUES ("{user.username}", "{user.pw_hash}", "{user.private_key}", "{user.public_key}")')
+        cursor.execute(f'INSERT INTO Accounts (user_name, password, private_key, public_key) VALUES ("{user.username}", "{user.pw_hash}", "{user.pem_private_key}", "{user.pem_public_key}")')
         db.commit()
         db.close()
 

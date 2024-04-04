@@ -10,21 +10,21 @@ class GCTx:
         self.sigs = []
         self.reqd = []
 
-    def __repr__(self):
+    def __str__(self):
         string = "INPUTS:\n"
-        for inp in self.inputs:
+        for inp in self.inputs: 
             # username = GCAccounts.idPublicKey(inp[0])
             string += f"{str(inp[1])} from {inp[0]}\n"
         string += "OUTPUTS:\n"
         for out in self.outputs:
             # username = GCAccounts.idPublicKey(out[0])
-            string += f"{str(out[1])} from {out[0]}\n"
+            string += f"{str(out[1])} to {out[0]}\n"
         string += "EXTRA REQUIRED SIGNATURES:\n"
         for sig in self.reqd:
-            string += f"{sig}"
+            string += f"{str(sig)}"
         string += "SIGNATURES:\n"
         for sig in self.sigs:
-            string += f"{sig}\n"
+            string += f"{str(sig)}\n"
         string += "END\n"
         return string
 
