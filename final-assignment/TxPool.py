@@ -87,6 +87,6 @@ class TxPool():
     
     def __str__(self):
         tx_str = ""
-        for tx in self.transactions:
-            tx_str += "\n\n" + str(tx) + "\n"
+        for i, tx in enumerate(self.transactions):
+            tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
         return tx_str

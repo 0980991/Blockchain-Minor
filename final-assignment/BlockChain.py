@@ -3,7 +3,7 @@ from GCBlock import GCBlock
 import pickle
 class BlockChain:
 
-    def __init__(self, chain_data_file="GoodChain.dat"):
+    def __init__(self, chain_data_file="BlockChain.dat"):
         self.chain_data_file = chain_data_file
         try:
             fh = open(chain_data_file, 'rb')
@@ -19,8 +19,15 @@ class BlockChain:
     def add(self, block):
         self.chain.append(block)
 
-    def load(self, data_file):
-        pass
+    def load(self, data_file="BlockChain.dat"):
+        try:
+            fh = open(data_file, 'rb')
+            transactions = pickle.load(fh)
+            fh.close()
+            self.transactions = transactions
+        except FileNotFoundError:
+            print(f"{data_file} not found!")
+
 
     def save(self, data_file="BlockChain.dat"):
         fh = open(data_file, 'wb')
@@ -29,3 +36,10 @@ class BlockChain:
 
     def getPrevBlock(self):
         return self.chain[-1]
+
+    def __str__(self):
+        string = ""
+        for block in self.chain:
+            string += str(block) + "\n\n"
+        string = string[2:]
+        return string

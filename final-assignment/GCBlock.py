@@ -9,14 +9,16 @@ import time
 
 class GCBlock:
     def __init__(self, data, previousBlock=None):
+        self.previousBlock = previousBlock
         self.time_stamp = dt.now()
         self.data = data
         self.nonce = 0
-        self.previousBlock = previousBlock
         self.leading_zeros = 3
         if previousBlock is None:
+            self.id = 0
             self.previousHash = None
         else:
+            self.id = previousBlock.id + 1
             self.previousHash = previousBlock.computeHash()
         self.blockHash = self.computeHash()
 
@@ -24,6 +26,7 @@ class GCBlock:
         self.data.append(Tx)
 
     def computeHash(self):
+        # TODO Add Time stamp and self.id to the hash
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(bytes(str(self.data),'utf8'))
         digest.update(bytes(str(self.previousHash),'utf8'))
@@ -72,3 +75,10 @@ class GCBlock:
                 difficulty = difficulty + 10
         self.blockHash = new_hash
         # input(f"{time.time()-start_time}\ndiff: {difficulty}")
+
+    def __str__(self):
+        data_str = "\n"
+        for tx in self.data:
+            data_str += f"  Transaction: {tx.id}\n"
+        string = f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp}\n{64*'-'}\nData: {data_str}{64*'-'}\nNonce: {self.nonce}\n{64*'-'}\nBlock Hash: {self.blockHash}\n{64*'-'}\nPrevious Block Hash: {self.previousHash}"
+        return string

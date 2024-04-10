@@ -25,21 +25,23 @@ class GoodChainApp():
         self.setMenuOptions()
 
     def test(self):
-        new_hashes = []
-        for i in range(20):
-            start_time = time.time()
+        self.explore()        
+        # TEST MINING
+        # new_hashes = []
+        # for i in range(20):
+        #     start_time = time.time()
         
-            prev_block = self.blockchain.getPrevBlock()
-            new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
-            new_block.mine()
-            self.blockchain.add(new_block)
-            self.blockchain.save()
-            end_time = time.time()  # Record the end time
-            duration = end_time - start_time
-            new_hashes.append([self.blockchain.chain[-1].blockHash, duration])
-            # self.hf.enterToContinue(f"Block sucesfully mined in {duration} seconds! Hash = {self.blockchain.chain[-1].blockHash}")
-        for i, hasht in enumerate(new_hashes):
-            print(f"[{i+1}] {hasht[1]}  seconds")
+        #     prev_block = self.blockchain.getPrevBlock()
+        #     new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
+        #     new_block.mine()
+        #     self.blockchain.add(new_block)
+        #     self.blockchain.save()
+        #     end_time = time.time()  # Record the end time
+        #     duration = end_time - start_time
+        #     new_hashes.append([self.blockchain.chain[-1].blockHash, duration])
+        #     # self.hf.enterToContinue(f"Block sucesfully mined in {duration} seconds! Hash = {self.blockchain.chain[-1].blockHash}")
+        # for i, hasht in enumerate(new_hashes):
+        #     print(f"[{i+1}] {hasht[1]}  seconds")
             
         self.hf.enterToContinue()  
         pass
@@ -57,12 +59,10 @@ class GoodChainApp():
             if self.hf.yesNoInput("Are you sure you want Logout and Quit the application?"):
                 sys.exit()
             return
-        
         sys.exit()
 
     def explore(self):
-        print("The Good Chain: ")
-        self.hf.enterToContinue("")
+        self.hf.enterToContinue(str(self.blockchain))
 
     def login(self):
         user_credentials = self.hf.readUserInput(["Enter your username:", "Enter your password:"])
@@ -196,10 +196,11 @@ class GoodChainApp():
         self.blockchain.add(new_block)
         self.blockchain.save()
         self.tx_pool.removeTx()
-        pass
+        self.tx_pool.save()
+        self.hf.enterToContinue(f"Mining Succesful with a nonce of: {new_block.nonce}\nHash: {new_block.blockHash}")
 
     def viewAccountDetails(self):
-        print(f"{64*'='}\nUsername: {self.user.username}:\n{64*'-'}\nPublic Key:\n{self.user.pem_public_key.decode('utf-8')}\n{self.user.pem_private_key.decode('utf-8')}\n")
+        print(f"{64*'='}\nUsername: {self.user.username}\n{64*'-'}\nPublic Key:\n{self.user.pem_public_key.decode('utf-8')}\n{self.user.pem_private_key.decode('utf-8')}\n")
         self.hf.enterToContinue()
 
 
