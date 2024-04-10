@@ -1,31 +1,54 @@
 import itertools
 import Signature as s
+from datetime import datetime as dt
+from datetime import timedelta as td
+import random as r
+
 
 class GCTx:
-    id_obj = itertools.count()
-    def __init__(self, inputs=None, outputs=None):
-        self.id = next(GCTx.id_obj)
+    # TODO : ID resets when program resets. It should continue from te last ID
+    def __init__(self, inputs=None, outputs=None, gas_fee=0):
+        ## TEST TIME STAMP PRIORITIZATION
+        if r.random() < 0.5:
+            self.time_stamp = dt.now()
+        else:
+            self.time_stamp = dt.now() - td(days=2)
+        self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')
+
+
+        if inputs is None:
+            inputs = []
         self.inputs = inputs
+
+        if outputs is None:
+            outputs = []
+
         self.outputs = outputs
+        self.gas_fee = gas_fee
         self.sigs = []
         self.reqd = []
 
     def __str__(self):
-        string = "INPUTS:\n"
-        for inp in self.inputs: 
+        string = f"{64*'+'}\nTransaction ID: {self.id}\n{64*'-'}\nINPUTS: "
+        for inp in self.inputs:
             # username = GCAccounts.idPublicKey(inp[0])
             string += f"{str(inp[1])} from {inp[0]}\n"
-        string += "OUTPUTS:\n"
+        string += f"{64*'-'}\nOUTPUTS: "
         for out in self.outputs:
             # username = GCAccounts.idPublicKey(out[0])
             string += f"{str(out[1])} to {out[0]}\n"
-        string += "EXTRA REQUIRED SIGNATURES:\n"
-        for sig in self.reqd:
-            string += f"{str(sig)}"
-        string += "SIGNATURES:\n"
+        string += f"{64*'-'}\nGAS FEE: {self.gas_fee}\n"
+        string += f"{64*'-'}\nSIGNATURES: "
         for sig in self.sigs:
             string += f"{str(sig)}\n"
-        string += "END\n"
+        string += f"{64*'-'}\nEXTRA REQUIRED SIGNATURES: "
+        if self.reqd == []:
+                string += "<No Extra Signatures>"
+        else:
+            for sig in self.reqd:
+                string += f"{str(sig)}"
+
+        string += f"\n{64*'+'}"
         return string
 
     def addInput(self, from_addr, amount):
@@ -36,13 +59,6 @@ class GCTx:
 
     def addReqd(self, sig):
         self.reqd.append(sig)
-
-    def collect_transaction_data(self):
-        tx_data=[]
-        tx_data.append(self.inputs)
-        tx_data.append(self.outputs)
-        tx_data.append(self.reqd)
-        return str(tx_data).encode('utf-8')
 
     def sign(self, private_key):
         message = self.collectTxData()
@@ -64,8 +80,8 @@ class GCTx:
         for addr,amount in self.inputs:
             found = False
             # 1. Verify Sender Signatures
-            for s in self.sigs:
-                if verify(tx_data, s, addr):
+            for sig in self.sigs:
+                if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
                     found = True
             if not found:
                 return False
@@ -77,9 +93,9 @@ class GCTx:
 
         for addr in self.reqd:
             found = False
-            for s in self.sigs:
+            for sig in self.sigs:
                 # 3. Verify required signatures against
-                if verify(tx_data, s, addr):
+                if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
                     found = True
             if not found:
                 return False

@@ -40,7 +40,7 @@ class GCAccounts():
         users = self.user_db.getAllUsers()
         for user in users:
             self.users.append(GCUser(user[0], user[1], ast.literal_eval(user[2]), ast.literal_eval(user[3])))
-                    
+
     def userExists(self, username):
         for user in self.users:
             if user.username.lower() == username.lower():

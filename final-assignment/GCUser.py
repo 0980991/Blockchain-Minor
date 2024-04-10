@@ -22,4 +22,4 @@ class GCUser:
 
 
     def __str__(self):
-        return f"User {username}:\n{20*'='}\n{self.pem_public_key}"
+        return f"User {username}:\n{64*'='}\n{self.pem_public_key}"

@@ -65,6 +65,19 @@ class HelperFunctions:
                 return []
         return user_input
 
+    def readUserInput2(self, clear=True):
+        while True:
+            user_input = input("Enter 'b' or 'cancel x' (where x is a transaction id): ").strip().lower()
+            if user_input == 'b':
+                return 'b'
+            elif user_input.startswith('cancel'):
+                args = user_input.split()
+                if len(args) == 2 and args[1].isdigit():
+                    return int(args[1])
+                else:
+                    print("Invalid input. Please enter 'b' or 'cancel x' where x is an integer.")
+            else:
+                print("Invalid input. Please enter 'b' or 'cancel x' where x is an integer.")
 
     def enterToContinue(self, message=''):
         input(message + '\nPlease press enter to continue...')

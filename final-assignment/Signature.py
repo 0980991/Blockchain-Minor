@@ -18,7 +18,6 @@ def serializePrivateKey(private_key):
         encryption_algorithm=serialization.NoEncryption()
     )
 
-
 def serializePublicKey(public_key):
     return public_key.public_bytes(
         encoding=serialization.Encoding.PEM,
@@ -38,10 +37,13 @@ def sign(message, private_key):
         padding.PSS(mgf=padding.MGF1(hashes.SHA256()), salt_length=padding.PSS.MAX_LENGTH),
         hashes.SHA256()
         )
+    # print(f"Message:\n{message}\n\nsig:\n{signature}")
     return signature
 
 def verify(message, signature, public_key):
     message = bytes(str(message), 'utf-8')
+    # print(f"Message:\n{message}\n\nsig:\n{signature}")
+
     try:
         public_key.verify(
             signature,
@@ -53,6 +55,6 @@ def verify(message, signature, public_key):
         return True
     except InvalidSignature:
          return False
-    except:
-        print('Error executing public_key.verify')
-        return False
+    # except:
+    #     print('Error executing public_key.verify')
+    #     return False

@@ -24,7 +24,7 @@
 
 ## User interface:
 
-[ ] The application must have a textual console-based user interface
+[x] The application must have a textual console-based user interface
 
 [ ] The user interface must have a menu system to facilitate the operation of the application.
 
@@ -46,7 +46,7 @@
 
 A public user is a user who is not registered or signed up in the application. This user has some limited access to the system.
 
-[ ] Any user can freely register (sign up) in the application.
+[x] Any user can freely register (sign up) in the application.
 
 [ ] Any user can explore the public ledger and view the data of each block.
 
@@ -54,11 +54,11 @@ A public user is a user who is not registered or signed up in the application. T
 
 Once a public user signed up in the application, a node is created for the user. We will call this user a “node user”, or “logged-in user”, or only a “node” for short.
 
-[ ] A user must provide a unique username and a password when registering in the system.
+[x] A user must provide a unique username and a password when registering in the system.
 
 [ ] A node user will receive 50 coins as a sign-up reward, after registration.
 
-[ ] A unique pair of private key and public key must be created for a node user, after registration.
+[x] A unique pair of private key and public key must be created for a node user, after registration.
 
 ## Node user (Logged in user)
 
@@ -88,9 +88,9 @@ Note: We will use the words “logged-in user”, “node user” or “node”,
 
 ## Transactions:
 
-[ ] An extra value could be placed on a transaction as transaction fee.
+[x] An extra value could be placed on a transaction as transaction fee.
 
-[ ] A sender must enter the transaction fee, while creating a transaction.
+[x] A sender must enter the transaction fee, while creating a transaction.
 
 [ ] The transaction fee is incentive to motivate miners to pick a transaction for their new block.
 
@@ -98,7 +98,7 @@ Note: We will use the words “logged-in user”, “node user” or “node”,
 
 As shown in the Figure 1, there are three data files required for the system to meet the required functionalities. The purpose of each file is briefly described below:
 
-[ ] The Database
+[x] The Database
 
 A relational database is required to store data of the registered users, including username, hash of password, private key, and public key, and more information if needed (e.g., recovery phrase key). It is obvious that this database must be securely implemented. This database must be used only for the users’ information and no data from the blockchain or the pool should be stored in the relational database.
 
@@ -106,7 +106,7 @@ A relational database is required to store data of the registered users, includi
 
 This is the main file to store all data of transactions. It must be developed according to requirements of blockchain data structure, including all the required components (for example, hash of block, metadata, transaction data, nonce, etc.)
 
-[ ] The Pool
+[?] The Pool
 
 As this application can serve only one user at a time, some changes of the blockchain (e.g., requests for transactions) needs to be temporarily placed in a file, until the validation process or consensus process is completed. The pool file is mainly used for this synchronization purpose.
 
@@ -128,16 +128,21 @@ Mining:
 
 Security:
 
-[ ] SHA256 must be used for any hashing in the system.
+[x] SHA256 must be used for any hashing in the system.
 
-[ ] A password must be saved in the form of a hash in the system.
+[x] A password must be saved in the form of a hash in the system.
 
 [ ] A user must be able to see their private key and public key when logged in.
 
 [ ] A username (or hashed unique public key) must be used as the public account number of a user for any transaction.
 
+## ERROR HANDLING
+[ ] readUserInput should have a type specification for the input.
+
 
 ## UX
+[ ] The system should probably accept decimal nrs
+
 [ ] readUserInput should be able to go back a prompt. Currently its cancels the entire function.
 
 [ ] Display usernames isntead of public keys in things like Tx and Txpools

@@ -3,12 +3,12 @@ import os
 import sys
 from GCAccounts import GCAccounts
 from GCUser import GCUser
-import colorama
+from GCBlock import GCBlock
 from helper_functions import HelperFunctions
 from DbInterface import DbInterface as dbi
 from GCTx import GCTx
 from TxPool import TxPool
-
+from BlockChain import BlockChain
 
 class GoodChainApp():
 
@@ -17,15 +17,25 @@ class GoodChainApp():
         self.accounts = GCAccounts()
         self.tx_pool = TxPool()
         self.tx_pool.load()
+        self.blockchain = BlockChain()
         self.logged_in = False
         self.user = None
         self.options = None
         self.setMenuOptions()
 
+    def test(self):
+        prev_block = self.blockchain.getPrevBlock()
+        new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
+        new_block.mine()
+        self.blockchain.add(new_block)
+        self.blockchain.save()
+
     def start(self):
         while True:
+            self.test()
             choice = self.hf.optionsMenu("Welcome to the GoodChain application.\nWhat would you like to do?", self.options)
             self.options[choice][0]()
+
 
     def exit(self):
         if self.logged_in:
@@ -84,24 +94,24 @@ class GoodChainApp():
             self.accounts.users.append(new_user)
 
             dbi.insertUser(new_user)
-
-            self.tx_pool.add(GCTx([("REWARD", 50)], [(new_user.pem_public_key, 50)]))
+            tx_reward = GCTx()
+            self.tx_pool.add([("REWARD", 50)], [(new_user.pem_public_key, 50)])
 
             if self.hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
         else:
             self.hf.enterToContinue("This username has already been taken!")
 
-
     def setMenuOptions(self):
         if self.logged_in:
             self.options = [
                 [self.explore, "Explore the Blockchain"],
-                [self.transfer, "Transfer Coins"],
+                [self.transfer, "Transfer Coins ✓ (validation)"],
                 [self.checkBalance, "Check Balance"],
-                [self.viewTransactionPool, "Transaction Pool"],
-                [self.userTransactions, "Your Pending Transactions"],
-                [self.mine, "Mine a Block"],
+                [self.viewTransactionPool, "View Transaction Pool ✓"],
+                [self.userTransactions, "Your Pending Transactions ✓"],
+                [self.mineBlock, "Mine a Block"],
+                [self.viewAccountDetails, "View Your Account Details (private & public key)"],
                 [self.logout, "Logout"],
                 [self.exit, "Exit"],
             ]
@@ -114,17 +124,31 @@ class GoodChainApp():
             ]
 
     def transfer(self):
-        try:
-            username, amount, gasfee = self.hf.readUserInput(["Enter the username of the receiver", "Please enter the amount you would like to transfer", "Please enter the gasfee amount."])
-        except ValueError:
-            # User canceled and the function returned an empty list.
-            return
-        public_key_receiver = self.accounts.publicKeyFromUsername(username)
-        send_amount = int(amount)
-        gasfee = int(gasfee)
-        receive_amount = send_amount - gasfee
-        self.tx_pool.add(GCTx([(self.user.username, send_amount)], [(public_key_receiver, receive_amount)]))
+        valid_input = False
+        while not valid_input:
+            try:
+                username, amount, gas_fee = self.hf.readUserInput(["Enter the username of the receiver", "Please enter the amount you would like to transfer", "Please enter the gas fee amount."])
+                valid_input=True
+            except ValueError:
+                # User canceled and the function returned an empty list.
+                return
 
+        # Use if send_amount.isdigit()
+        send_amount = int(amount)
+        gas_fee = int(gas_fee)
+        receive_amount = send_amount - gas_fee
+        if gas_fee >= 0 and gas_fee < send_amount:
+            if self.user.username != username and self.accounts.userExists(username):
+                # TODO Have verification prompt if found, else 'user not found'
+            
+                tx = GCTx([(self.user.username, send_amount)], [(username, receive_amount)], gas_fee)
+                tx.sign(self.user.private_key)
+                self.tx_pool.add(tx)
+            else:
+                self.hf.enterToContinue("ERROR: User not found")
+            # TODO Validate the receiver is not the user
+        else:
+            self.hf.enterToContinue(f"ERROR: The gas fee must be between 0 and {send_amount}.")
 
     def checkBalance(self):
         pass
@@ -134,10 +158,32 @@ class GoodChainApp():
         self.hf.enterToContinue()
 
     def userTransactions(self):
-        user_transactions = self.tx_pool.getUserTransactions(self.user.public_key)
+        user_transactions = self.tx_pool.getUserTransactions(self.user.username)
+        print(user_transactions)
+        tx_id = self.hf.readUserInput2()
+        if tx_id == 'b':
+            return
+        else:
+            self.tx_pool.remove(tx_id)
+        self.hf.enterToContinue()
 
-    def mine(self):
+    def mineBlock(self):
+        # Check if there 5 tx in transaction pool
+        if len(self.tx_pool.transactions) < 5:
+            self.hf.enterToContinue(f"There are currently {len(self.tx_pool.transactions)} in the transaction pool but at least 5 are required to create block.")
+            return
+        
+        prev_block = self.blockchain.getPrevBlock()
+        new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
+        new_block.mine()
+        self.blockchain.add(new_block)
+        self.blockchain.save()
         pass
+
+    def viewAccountDetails(self):
+        print(f"{64*'='}\nUsername: {self.user.username}:\n{64*'-'}\nPublic Key:\n{self.user.pem_public_key.decode('utf-8')}\n{self.user.pem_private_key.decode('utf-8')}\n")
+        self.hf.enterToContinue()
+
 
 def get_banner():
     banners = []
