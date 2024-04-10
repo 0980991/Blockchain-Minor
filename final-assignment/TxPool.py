@@ -76,13 +76,17 @@ class TxPool():
         for tx in sorted_transactions:
             print(tx.gas_fee)
 
+    def removeTx(self):
+        self.transactions = self.transactions[5:]
+        
 
     def getTxData(self):
         tx_data = self.transactions[:5]
         # REMOVE tx FROM self.transactions.
         return tx_data
+    
     def __str__(self):
         tx_str = ""
         for tx in self.transactions:
-            tx_str += 64*"=" + "\n" + str(tx) + "\n"
+            tx_str += "\n\n" + str(tx) + "\n"
         return tx_str

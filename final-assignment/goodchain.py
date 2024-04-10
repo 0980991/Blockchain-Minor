@@ -26,7 +26,7 @@ class GoodChainApp():
 
     def test(self):
         new_hashes = []
-        for i in range(10):
+        for i in range(20):
             start_time = time.time()
         
             prev_block = self.blockchain.getPrevBlock()
@@ -42,10 +42,12 @@ class GoodChainApp():
             print(f"[{i+1}] {hasht[1]}  seconds")
             
         self.hf.enterToContinue()  
-        pass  
+        pass
+
+
     def start(self):
         while True:
-            self.test()
+            # self.test()
             choice = self.hf.optionsMenu("Welcome to the GoodChain application.\nWhat would you like to do?", self.options)
             self.options[choice][0]()
 
@@ -108,8 +110,9 @@ class GoodChainApp():
             self.accounts.users.append(new_user)
 
             dbi.insertUser(new_user)
-            tx_reward = GCTx()
-            self.tx_pool.add([("REWARD", 50)], [(new_user.pem_public_key, 50)])
+            
+            tx_reward = GCTx([("REWARD", 50)], [(new_user.user_name, 50)])
+            self.tx_pool.add(tx_reward)
 
             if self.hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
@@ -192,6 +195,7 @@ class GoodChainApp():
         new_block.mine()
         self.blockchain.add(new_block)
         self.blockchain.save()
+        self.tx_pool.removeTx()
         pass
 
     def viewAccountDetails(self):

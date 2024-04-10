@@ -1,4 +1,3 @@
-import itertools
 import Signature as s
 from datetime import datetime as dt
 from datetime import timedelta as td
@@ -13,7 +12,7 @@ class GCTx:
             self.time_stamp = dt.now()
         else:
             self.time_stamp = dt.now() - td(days=2)
-        self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')
+        self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')[4:]
 
 
         if inputs is None:
@@ -39,6 +38,8 @@ class GCTx:
             string += f"{str(out[1])} to {out[0]}\n"
         string += f"{64*'-'}\nGAS FEE: {self.gas_fee}\n"
         string += f"{64*'-'}\nSIGNATURES: "
+        if self.sigs == []:
+            string += "<This transaction is not signed by the sender>\n"
         for sig in self.sigs:
             string += f"{str(sig)}\n"
         string += f"{64*'-'}\nEXTRA REQUIRED SIGNATURES: "
