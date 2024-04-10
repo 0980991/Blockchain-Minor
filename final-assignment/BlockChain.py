@@ -1,5 +1,6 @@
 from datetime import datetime as dt
 from GCBlock import GCBlock
+import pickle
 class BlockChain:
 
     def __init__(self, chain_data_file="GoodChain.dat"):
@@ -22,7 +23,9 @@ class BlockChain:
         pass
 
     def save(self, data_file="BlockChain.dat"):
-        pass
+        fh = open(data_file, 'wb')
+        pickle.dump(self.chain, fh)
+        fh.close()
 
     def getPrevBlock(self):
         return self.chain[-1]

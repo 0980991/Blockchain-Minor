@@ -4,13 +4,16 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import base64
 
+## FOR DEBUG
+import time
+
 class GCBlock:
     def __init__(self, data, previousBlock=None):
         self.time_stamp = dt.now()
         self.data = data
         self.nonce = 0
         self.previousBlock = previousBlock
-        self.leading_zeros = 2
+        self.leading_zeros = 3
         if previousBlock is None:
             self.previousHash = None
         else:
@@ -24,8 +27,10 @@ class GCBlock:
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
         digest.update(bytes(str(self.data),'utf8'))
         digest.update(bytes(str(self.previousHash),'utf8'))
+        digest.update(bytes(str(self.nonce), 'utf8'))
         h = digest.finalize()
-        return h.hex
+        h = h.hex()
+        return h
 
     def validate(self):
         # 1. Check if tranactions in block are valid
@@ -51,35 +56,19 @@ class GCBlock:
             self.previousHash=self.previousBlock.computeHash()
             print()
         zeroes = '0'*self.leading_zeros
+        difficulty = 16
         flag = True
-        # new_hash = ''
+        start_time = time.time()
         while flag:
             new_hash = self.computeHash()
+            print(new_hash)
             if new_hash.startswith(zeroes):
-                flag = False
-            else:
-                self.nonce += 1
+                if ord(new_hash[self.leading_zeros]) < difficulty: # Multiplies time by 2
+                    flag = False
+                    break
+            self.nonce += 1
+            if time.time() - start_time > 10 and self.nonce % 500 == 0 and difficulty < 256:
+                print(time.time()-start_time)
+                difficulty = difficulty + 10
         self.blockHash = new_hash
-            
-        # digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        # digest.update(bytes(str(self.data), "utf8"))
-        # digest.update(bytes(str(self.previousHash), "utf8"))
-        # flag = False
-        # nonce = 0
-        # while not flag:
-        #     digest_temp = digest.copy()
-        #     digest_temp.update(bytes(str(nonce), 'utf8'))
-        #     block_hash = digest_temp.finalize()
-        #     block_hash1 = base64.b64encode(block_hash)
-        #     block_hash1 = block_hash1.decode('utf-8')
-        #     print(block_hash)
-        #     if block_hash[:self.leading_zeros] == bytes('0' * self.leading_zeros, 'utf8'):
-        #         if int(block_hash[self.leading_zeros]) < 128: # Multiplies time by 2
-        #             flag=True
-        #             self.nonce = nonce
-        #     nonce  += 1
-        #     del digest_temp
-
-
-        # self.blockHash = self.computeHash()
-        # return
+        # input(f"{time.time()-start_time}\ndiff: {difficulty}")

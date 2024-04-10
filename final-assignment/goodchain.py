@@ -9,6 +9,7 @@ from DbInterface import DbInterface as dbi
 from GCTx import GCTx
 from TxPool import TxPool
 from BlockChain import BlockChain
+import time
 
 class GoodChainApp():
 
@@ -24,12 +25,24 @@ class GoodChainApp():
         self.setMenuOptions()
 
     def test(self):
-        prev_block = self.blockchain.getPrevBlock()
-        new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
-        new_block.mine()
-        self.blockchain.add(new_block)
-        self.blockchain.save()
-
+        new_hashes = []
+        for i in range(10):
+            start_time = time.time()
+        
+            prev_block = self.blockchain.getPrevBlock()
+            new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
+            new_block.mine()
+            self.blockchain.add(new_block)
+            self.blockchain.save()
+            end_time = time.time()  # Record the end time
+            duration = end_time - start_time
+            new_hashes.append([self.blockchain.chain[-1].blockHash, duration])
+            # self.hf.enterToContinue(f"Block sucesfully mined in {duration} seconds! Hash = {self.blockchain.chain[-1].blockHash}")
+        for i, hasht in enumerate(new_hashes):
+            print(f"[{i+1}] {hasht[1]}  seconds")
+            
+        self.hf.enterToContinue()  
+        pass  
     def start(self):
         while True:
             self.test()
@@ -42,6 +55,7 @@ class GoodChainApp():
             if self.hf.yesNoInput("Are you sure you want Logout and Quit the application?"):
                 sys.exit()
             return
+        
         sys.exit()
 
     def explore(self):
