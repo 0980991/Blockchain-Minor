@@ -55,6 +55,7 @@ class TxPool():
         # 2. Gas fee amount takes second priority*
         # 3. *If a transaction is older than 2 days, it will be prioritized over a high gas fee tx.
         # 4. Multiple transactions older than 2 days will be once again prioritized based on gas fee.
+        # TODO: Sorting function sorts reward functions last for some reason
         def sort_key(tx):
             if tx.time_stamp < (dt.now()-td(days=2)):
                 return (0, -tx.time_stamp.timestamp())

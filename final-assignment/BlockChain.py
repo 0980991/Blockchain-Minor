@@ -19,6 +19,31 @@ class BlockChain:
     def add(self, block):
         self.chain.append(block)
 
+    def calculateUTXO(self, pem_public_key):
+        utxo = []
+        for block in self.chain:
+            for tx in block.transactions:
+                for output in tx.outputs:
+                    if output[0] == pem_public_key and output[1] > 0:
+                        utxo.append(output)
+                        
+        return utxo
+
+    def getUserBalance(self, user):
+        balance = 0
+        # Iterate through the chain in reverse
+        for i in range(len(self.chain) - 1, -1, -1):
+            print(my_list[i])
+        # for block in self.chain:
+        #     for transaction in block.transactions:
+        #         if transaction['from'] == address:
+        #             balance -= transaction['amount']
+        #             balance -= transaction['gas']
+        #         if transaction['to'] == address:
+        #             balance += transaction['amount']
+
+        return balance
+
     def load(self, data_file="BlockChain.dat"):
         try:
             fh = open(data_file, 'rb')
@@ -27,7 +52,6 @@ class BlockChain:
             self.transactions = transactions
         except FileNotFoundError:
             print(f"{data_file} not found!")
-
 
     def save(self, data_file="BlockChain.dat"):
         fh = open(data_file, 'wb')

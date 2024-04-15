@@ -17,13 +17,13 @@ class GCAccounts():
                     return user.pem_public_key
                 else:
                     return user.public_key
-    # def usernameFromPublicKey(self, pem_public_key):
-    #     """ Get a username from a serialized public key"""
-    #     for user in self.users:
-    #         if user.pem_public_key == pem_public_key:
-    #             return user.username
 
-    #     return ""
+    def usernameFromPublicKey(self, pem_public_key):
+        """ Get a username from a serialized public key"""
+        for user in self.users:
+            if user.pem_public_key == pem_public_key:
+                return user.username
+        return ""
 
     def validateAccount(self, username, pw_hash):
         # Declaring our password

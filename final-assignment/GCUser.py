@@ -4,6 +4,8 @@ class GCUser:
     def __init__(self, username, pw_hash, pem_private_key=None, pem_public_key=None):
         self.username = username
         self.pw_hash = pw_hash
+        # utxo format [0: pem_public key, 1: amount, 2: username]
+        self.utxo = None # A list of unspend outputs, used to determine the balance of the user
 
         if pem_private_key is None:
             self.private_key = Signature.generatePrivateKey()
@@ -18,8 +20,6 @@ class GCUser:
         else:
             self.pem_public_key = pem_public_key
             self.public_key = Signature.deserializePublicKey(pem_public_key)
-
-
 
     def __str__(self):
         return f"User {username}:\n{64*'='}\n{self.pem_public_key}"

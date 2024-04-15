@@ -2,23 +2,20 @@ import Signature as s
 from datetime import datetime as dt
 from datetime import timedelta as td
 import random as r
-
+import GCAccounts
 
 class GCTx:
     # TODO : ID resets when program resets. It should continue from te last ID
     def __init__(self, inputs=None, outputs=None, gas_fee=0):
-        ## TEST TIME STAMP PRIORITIZATION
-        if r.random() < 0.5:
-            self.time_stamp = dt.now()
-        else:
-            self.time_stamp = dt.now() - td(days=2)
+        self.time_stamp = dt.now()
         self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')[4:]
 
-
+        # Inputs are structured as [(pem_public_key, amount, username)]
         if inputs is None:
             inputs = []
         self.inputs = inputs
-
+        # Outputs are structured as [(pem_public_key, amount, username), (pem_public_key, amount, username)]
+        
         if outputs is None:
             outputs = []
 
@@ -28,14 +25,14 @@ class GCTx:
         self.reqd = []
 
     def __str__(self):
-        string = f"{64*'+'}\nTransaction ID: {self.id}\n{64*'-'}\nINPUTS: "
+        string = f"{60*'='}\nTransaction ID: {self.id}\n{64*'-'}\nINPUTS: "
         for inp in self.inputs:
             # username = GCAccounts.idPublicKey(inp[0])
-            string += f"{str(inp[1])} from {inp[0]}\n"
+            string += f"{str(inp[1])} from {inp[2]}\n"
         string += f"{64*'-'}\nOUTPUTS: "
         for out in self.outputs:
-            # username = GCAccounts.idPublicKey(out[0])
-            string += f"{str(out[1])} to {out[0]}\n"
+            # username = GCAccounts.usernameFromPublicKey(out[0])
+            string += f"{str(out[1])} to {out[2]}\n"
         string += f"{64*'-'}\nGAS FEE: {self.gas_fee}\n"
         string += f"{64*'-'}\nSIGNATURES: "
         if self.sigs == []:
@@ -49,7 +46,7 @@ class GCTx:
             for sig in self.reqd:
                 string += f"{str(sig)}"
 
-        string += f"\n{64*'+'}"
+        string += f"\n{64*'='}"
         return string
 
     def addInput(self, from_addr, amount):
@@ -78,7 +75,7 @@ class GCTx:
         total_out = 0
         tx_data = self.collectTxData()
 
-        for addr,amount in self.inputs:
+        for addr,amount,user in self.inputs:
             found = False
             # 1. Verify Sender Signatures
             for sig in self.sigs:
@@ -101,7 +98,7 @@ class GCTx:
             if not found:
                 return False
 
-        for addr,amount in self.outputs:
+        for addr,amount,username in self.outputs:
             # 4. Verify the output amount is greater than 0
             if amount < 0:
                 return False

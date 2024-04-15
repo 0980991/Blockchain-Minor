@@ -80,7 +80,7 @@ class HelperFunctions:
                 print("Invalid input. Please enter 'b' or 'cancel x' where x is an integer.")
 
     def enterToContinue(self, message=''):
-        input(message + '\nPlease press enter to continue...')
+        input(str(message) + '\nPlease press enter to continue...')
 
 
     def pageHeader(self, text):

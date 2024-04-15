@@ -11,7 +11,7 @@ class GCBlock:
     def __init__(self, data, previousBlock=None):
         self.previousBlock = previousBlock
         self.time_stamp = dt.now()
-        self.data = data
+        self.transactions = data
         self.nonce = 0
         self.leading_zeros = 3
         if previousBlock is None:
@@ -23,12 +23,12 @@ class GCBlock:
         self.blockHash = self.computeHash()
 
     def addTx(self, Tx):
-        self.data.append(Tx)
+        self.transactions.append(Tx)
 
     def computeHash(self):
         # TODO Add Time stamp and self.id to the hash
         digest = hashes.Hash(hashes.SHA256(), backend=default_backend())
-        digest.update(bytes(str(self.data),'utf8'))
+        digest.update(bytes(str(self.transactions),'utf8'))
         digest.update(bytes(str(self.previousHash),'utf8'))
         digest.update(bytes(str(self.nonce), 'utf8'))
         h = digest.finalize()
@@ -37,7 +37,7 @@ class GCBlock:
 
     def validate(self):
         # 1. Check if tranactions in block are valid
-        for tx in self.data:
+        for tx in self.transactions:
             if not tx.isValid():
                 return False
         # 2. Check if previous
@@ -53,8 +53,6 @@ class GCBlock:
             return current_block_validity and previous_block_validity
 
     def mine(self):
-        # for _ in range(500000):                    # CAN BE any range         # This lenght can differ and should not affect the time it takes to find it.
-            # self.nonce = ''.join([chr(random.randint(48, 123)) for _ in range(10*leading_zeros)])
         if self.previousBlock is not None:
             self.previousHash=self.previousBlock.computeHash()
             print()
@@ -78,7 +76,15 @@ class GCBlock:
 
     def __str__(self):
         data_str = "\n"
-        for tx in self.data:
-            data_str += f"  Transaction: {tx.id}\n"
-        string = f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp}\n{64*'-'}\nData: {data_str}{64*'-'}\nNonce: {self.nonce}\n{64*'-'}\nBlock Hash: {self.blockHash}\n{64*'-'}\nPrevious Block Hash: {self.previousHash}"
+        for tx in self.transactions:
+            out_str = ""
+            for i, outs in enumerate(tx.outputs):
+                if i > 0:
+                    out_str += " & "
+                out_str += f"{outs[1]} to {outs[2]}"
+            data_str += f"  Transaction [{tx.id}]: {tx.inputs[0][1]} from {tx.inputs[0][2]} --> {out_str}\n"
+        string =  f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp}"
+        string += f"\n{64*'-'}\nData: {data_str}{64*'-'}\n"
+        string += f"Nonce: {self.nonce}\n{64*'-'}\nPrevious Block Hash: {self.previousHash}\n{64*'-'}\nCurrent Block Hash: {self.blockHash}\n"
+        string += f"{(64*'-')}\n"
         return string
