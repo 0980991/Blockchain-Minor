@@ -100,28 +100,6 @@ class GoodChainApp():
                         try_again = False
 
 
-    def calculateUTXO(self):
-        # Scan blockchain
-        for block in self.blockchain.chain:
-            for transaction in block.transactions:
-                for output in transaction.outputs:
-                    if self.user.username in self.accounts.users:
-                        self.accounts.users[self.user.username].add_utxo(output)
-
-                for inp in transaction.inputs:
-                    if inp.spends_utxo:
-                        spender = inp.spender
-                        if spender in self.accounts.users:
-                            self.accounts.users[spender].remove_utxo(input.spends_utxo)
-
-        # Calculate balances
-        for username, user in self.accounts.users.items():
-            balance = sum(utxo.amount for utxo in user.utxos)
-            user.balance = balance
-
-        # Update database with recalculated balances
-        update_database_with_user_data(self.accounts.users)
-
     def logout(self):
         self.user = None
         self.hf.prompt = "(guest)> "
@@ -142,8 +120,9 @@ class GoodChainApp():
 
             dbi.insertUser(new_user)
 
-            tx_reward = GCTx([("REWARD", 50, "Signup Reward")], [(new_user.pem_public_key, 50, new_user.username)])
+            tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             self.tx_pool.add(tx_reward)
+            self.tx_pool.sort()
 
             if self.hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
@@ -174,11 +153,12 @@ class GoodChainApp():
 
     def addTransactionsDebug(self):
         for i in range(5):
-            tx_reward = GCTx([("REWARD", 50, "Signup Reward")], [(self.user.pem_public_key, 50, self.user.username)])
+            tx_reward = GCTx([("REWARD", 50.0, "Debug Reward")], [(self.user.pem_public_key, 50.0, self.user.username)])
             self.tx_pool.add(tx_reward)
+            self.tx_pool.sort()
             # while username == self.user.username:
             #     username = r.choice(["joe", "mark", "q", "ari"])
-            # send_amount = r.choice([20, 40, 50, 1000, 100])
+            # send_amount = r.choice([20, 40, 50.0, 1000, 100])
             # gas_fee = r.choice([1,2,4,8,16])
             # receive_amount = send_amount - gas_fee
             # ins = [(self.user.pem_public_key, send_amount, self.user.username)]
@@ -199,8 +179,8 @@ class GoodChainApp():
                 return
 
         # Use if send_amount.isdigit()
-        send_amount = int(amount)
-        gas_fee = int(gas_fee)
+        send_amount = float(amount)
+        gas_fee = float(gas_fee)
         receive_amount = send_amount - gas_fee
         if gas_fee >= 0 and gas_fee < send_amount:
             if self.user.username != username and self.accounts.userExists(username):
@@ -208,6 +188,7 @@ class GoodChainApp():
                 utxo_sum = 0
                 utxo_i = 0
                 while utxo_sum < send_amount:
+                    # TODO utxo_i Currently gives an index error if send amount > current balance 
                     utxo_sum += self.user.utxo[utxo_i][1]
                     utxo_i += 1
                 sender_change = utxo_sum - send_amount
@@ -225,10 +206,13 @@ class GoodChainApp():
                 tx.sign(self.user.private_key)
                 if tx.isValid():
                     self.tx_pool.add(tx)
+                    self.tx_pool.sort()
 
                     # REMOVE spent outputs
                     self.user.utxo = self.user.utxo[utxo_i:]
-                    self.user.utxo.append([self.user.pem_public_key, sender_change, self.user.username])
+                    # ADD sender change output
+                    if sender_change != 0:
+                        self.user.utxo.append([self.user.pem_public_key, sender_change, self.user.username])
 
                     return
                     self.hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
@@ -249,8 +233,8 @@ class GoodChainApp():
             for i, output in enumerate(self.user.utxo):
                 balance += output[1]
                 print(f"{i+1}. {output[1]}")
-
-        self.hf.enterToContinue(f"Total Balance: {balance}")
+        self.hf.prettyPrint(f"Total Balance: {balance}")
+        self.hf.enterToContinue()
 
     def viewTransactionPool(self):
         print(self.tx_pool)
@@ -276,20 +260,26 @@ class GoodChainApp():
             return
 
         prev_block = self.blockchain.getPrevBlock()
+        
+        self.hf.logEvent(f"{64*"-"}\nPrevious block loaded:\n{str(prev_block)}")
+        # self.hf.logEvent(f"Previous block {prev_block.id} obtained with hash: {prev_block.blockHash}")
+        self.hf.logEvent(f"The Computed hash of previous block {prev_block.id} is: {prev_block.computeHash()}")
         new_block =GCBlock(self.tx_pool.getTxData(), prev_block)
         start_time = time.time()
         new_block.mine()
         end_time = time.time() - start_time
-        reward_sum = 50 # Base reward
+        self.hf.logEvent(f"{64*"-"}\nNew Block Mined:\n{str(new_block)}")
+        reward_sum = 50.0 # Base reward
         for tx in new_block.transactions:
             reward_sum += tx.gas_fee
         self.blockchain.add(new_block)
         self.blockchain.save()
         self.tx_pool.removeTx()
         self.tx_pool.save()
-        # TODO Add reward transaction / Write function to calculate gas fees.
         tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(self.user.pem_public_key, reward_sum, self.user.username)])
         self.tx_pool.add(tx_reward)
+        self.tx_pool.sort()
+        
         self.user.utxo = self.blockchain.calculateUTXO(self.user.pem_public_key)
         #######
         self.hf.enterToContinue(f"{64*'-'}\nMining Succesful with a nonce of: {new_block.nonce}\nHash: {new_block.blockHash}\nTime: {end_time}")

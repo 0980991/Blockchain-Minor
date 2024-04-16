@@ -1,6 +1,7 @@
 from datetime import datetime as dt
 from GCBlock import GCBlock
 import pickle
+from helper_functions import HelperFunctions as hf
 class BlockChain:
 
     def __init__(self, chain_data_file="BlockChain.dat"):
@@ -21,12 +22,25 @@ class BlockChain:
 
     def calculateUTXO(self, pem_public_key):
         utxo = []
+        utxo_in = []
+        utxo_out = []
         for block in self.chain:
             for tx in block.transactions:
                 for output in tx.outputs:
                     if output[0] == pem_public_key and output[1] > 0:
                         utxo.append(output)
-                        
+                        utxo_out.append(output[1])
+
+                for inp in tx.inputs:
+                    if inp[0] == pem_public_key:
+                        utxo_in.append(inp[1])
+
+        out_sum = 0
+        i = 0
+        while out_sum < sum(utxo_in):
+            out_sum += utxo_out[i]
+            i += 1
+        utxo = utxo[i:]
         return utxo
 
     def getUserBalance(self, user):
@@ -65,5 +79,4 @@ class BlockChain:
         string = ""
         for block in self.chain:
             string += str(block) + "\n\n"
-        string = string[2:]
         return string

@@ -51,7 +51,7 @@ class TxPool():
 
     def sort(self):
         # 0. self.transactions by default is sorted by time since transactions are appended over time.
-        # 1. Reward transactions have highest priority
+        # 1. Once sorted, reward transactions have highest priority
         # 2. Gas fee amount takes second priority*
         # 3. *If a transaction is older than 2 days, it will be prioritized over a high gas fee tx.
         # 4. Multiple transactions older than 2 days will be once again prioritized based on gas fee.
@@ -74,20 +74,19 @@ class TxPool():
         self.transactions = reward_transactions + sorted_transactions
         return
 
-        for tx in sorted_transactions:
-            print(tx.gas_fee)
-
     def removeTx(self):
         self.transactions = self.transactions[5:]
         
 
     def getTxData(self):
-        tx_data = self.transactions[:5]
-        # REMOVE tx FROM self.transactions.
+        tx_data = self.transactions[:10]
         return tx_data
     
     def __str__(self):
         tx_str = ""
+        if self.transactions == []:
+            return self.hf.prettyString("The transaction pool is currently empty.")
+        
         for i, tx in enumerate(self.transactions):
             tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
         return tx_str

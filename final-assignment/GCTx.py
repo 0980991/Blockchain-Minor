@@ -6,7 +6,7 @@ import GCAccounts
 
 class GCTx:
     # TODO : ID resets when program resets. It should continue from te last ID
-    def __init__(self, inputs=None, outputs=None, gas_fee=0):
+    def __init__(self, inputs=None, outputs=None, gas_fee=0.0):
         self.time_stamp = dt.now()
         self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')[4:]
 

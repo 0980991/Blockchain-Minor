@@ -1,0 +1,261 @@
+----------------------------------------------------------------
+Previous block loaded:
+Block [0]
+================================================================
+Mined on: 2024-04-16 13:38:26.445551
+----------------------------------------------------------------
+Data: 
+----------------------------------------------------------------
+Nonce: 0
+----------------------------------------------------------------
+Previous Block Hash: None
+----------------------------------------------------------------
+Current Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+
+The Computed hash of previous block 0 is: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+New Block Mined:
+Block [1]
+================================================================
+Mined on: 2024-04-16 13:38:31.989117
+----------------------------------------------------------------
+Data: 
+  Transaction [0416133830497196]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830498185]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830499184]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830500191]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830500191]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 1141
+----------------------------------------------------------------
+Previous Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+Current Block Hash: 000f6b50e5985c8b2810aa9910394e9442e75c66c816520596988a075d8375de
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+Previous block loaded:
+Block [1]
+================================================================
+Mined on: 2024-04-16 13:38:31.989117
+----------------------------------------------------------------
+Data: 
+  Transaction [0416133830497196]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830498185]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830499184]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830500191]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133830500191]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 1141
+----------------------------------------------------------------
+Previous Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+Current Block Hash: 000f6b50e5985c8b2810aa9910394e9442e75c66c816520596988a075d8375de
+----------------------------------------------------------------
+
+The Computed hash of previous block 1 is: 000f6b50e5985c8b2810aa9910394e9442e75c66c816520596988a075d8375de
+----------------------------------------------------------------
+New Block Mined:
+Block [2]
+================================================================
+Mined on: 2024-04-16 13:39:21.214094
+----------------------------------------------------------------
+Data: 
+  Transaction [0416133832269121]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416133920690875]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920691868]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920692866]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920693865]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 3347
+----------------------------------------------------------------
+Previous Block Hash: 000f6b50e5985c8b2810aa9910394e9442e75c66c816520596988a075d8375de
+----------------------------------------------------------------
+Current Block Hash: 0000a6406f19cf8a273e0d9e873b22d290b80735ddf058af2152ab31f2e51b1d
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+Previous block loaded:
+Block [2]
+================================================================
+Mined on: 2024-04-16 13:39:21.214094
+----------------------------------------------------------------
+Data: 
+  Transaction [0416133832269121]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416133920690875]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920691868]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920692866]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133920693865]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 3347
+----------------------------------------------------------------
+Previous Block Hash: 000f6b50e5985c8b2810aa9910394e9442e75c66c816520596988a075d8375de
+----------------------------------------------------------------
+Current Block Hash: 0000a6406f19cf8a273e0d9e873b22d290b80735ddf058af2152ab31f2e51b1d
+----------------------------------------------------------------
+
+The Computed hash of previous block 2 is: e353c241936ee63367c3c8670ca7d904cd9bece1b7c7614384adf189c30612b8
+----------------------------------------------------------------
+New Block Mined:
+Block [3]
+================================================================
+Mined on: 2024-04-16 13:40:03.201937
+----------------------------------------------------------------
+Data: 
+  Transaction [0416133920694880]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416133922012093]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416134001947097]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416134001948101]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416134001949098]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 2764
+----------------------------------------------------------------
+Previous Block Hash: e353c241936ee63367c3c8670ca7d904cd9bece1b7c7614384adf189c30612b8
+----------------------------------------------------------------
+Current Block Hash: 0009f9872355fcf5668a8131ea1bce5070a22da14fe17cf529b71243888f2c1f
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+Previous block loaded:
+Block [0]
+================================================================
+Mined on: 2024-04-16 20:22:06.999338
+----------------------------------------------------------------
+Data: 
+----------------------------------------------------------------
+Nonce: 0
+----------------------------------------------------------------
+Previous Block Hash: None
+----------------------------------------------------------------
+Current Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+
+The Computed hash of previous block 0 is: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+New Block Mined:
+Block [1]
+================================================================
+Mined on: 2024-04-16 20:22:31.174442
+----------------------------------------------------------------
+Data: 
+  Transaction [0416202214743073]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214744084]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214745071]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214746069]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214746203]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215488821]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215489808]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215490814]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215491809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215492809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 5856
+----------------------------------------------------------------
+Previous Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+Current Block Hash: 000d2fbb02ef8fe401fe87a77f72110dc550a6189f4097f75c65766b12b18443
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+Previous block loaded:
+Block [1]
+================================================================
+Mined on: 2024-04-16 20:22:31.174442
+----------------------------------------------------------------
+Data: 
+  Transaction [0416202214743073]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214744084]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214745071]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214746069]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202214746203]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215488821]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215489808]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215490814]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215491809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215492809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 5856
+----------------------------------------------------------------
+Previous Block Hash: c3b469a098023c9577525564f2a99a835670ce67a3350e6fc9f6b26ba076e257
+----------------------------------------------------------------
+Current Block Hash: 000d2fbb02ef8fe401fe87a77f72110dc550a6189f4097f75c65766b12b18443
+----------------------------------------------------------------
+
+The Computed hash of previous block 1 is: b92bb6aaafff019cc2b33245af493581af8e26e5248f51e118f7f7c6c5763934
+----------------------------------------------------------------
+New Block Mined:
+Block [2]
+================================================================
+Mined on: 2024-04-16 20:33:38.065594
+----------------------------------------------------------------
+Data: 
+  Transaction [0416202304777784]: Gas fee: 20.0 | 300.0 from q --> 280.0 to w 
+  Transaction [0416202253194638]: Gas fee: 10.0 | 100.0 from q --> 90.0 to joe 
+  Transaction [0416202215488821]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215489808]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215490814]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215491809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215492809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202232764415]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416202247582652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247583652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 770
+----------------------------------------------------------------
+Previous Block Hash: b92bb6aaafff019cc2b33245af493581af8e26e5248f51e118f7f7c6c5763934
+----------------------------------------------------------------
+Current Block Hash: 0005d2b15bcb42a6dd874ea51891d5b5fcce1efffc0e3f1a668df8c5cbc7f8a9
+----------------------------------------------------------------
+
+----------------------------------------------------------------
+Previous block loaded:
+Block [2]
+================================================================
+Mined on: 2024-04-16 20:33:38.065594
+----------------------------------------------------------------
+Data: 
+  Transaction [0416202304777784]: Gas fee: 20.0 | 300.0 from q --> 280.0 to w 
+  Transaction [0416202253194638]: Gas fee: 10.0 | 100.0 from q --> 90.0 to joe 
+  Transaction [0416202215488821]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215489808]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215490814]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215491809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215492809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202232764415]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416202247582652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247583652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+----------------------------------------------------------------
+Nonce: 770
+----------------------------------------------------------------
+Previous Block Hash: b92bb6aaafff019cc2b33245af493581af8e26e5248f51e118f7f7c6c5763934
+----------------------------------------------------------------
+Current Block Hash: 0005d2b15bcb42a6dd874ea51891d5b5fcce1efffc0e3f1a668df8c5cbc7f8a9
+----------------------------------------------------------------
+
+The Computed hash of previous block 2 is: 0005d2b15bcb42a6dd874ea51891d5b5fcce1efffc0e3f1a668df8c5cbc7f8a9
+----------------------------------------------------------------
+New Block Mined:
+Block [3]
+================================================================
+Mined on: 2024-04-16 20:33:40.326301
+----------------------------------------------------------------
+Data: 
+  Transaction [0416202215491809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202215492809]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202232764415]: Gas fee: 0 | 50.0 from Mining Reward --> 50.0 to q 
+  Transaction [0416202247582652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247583652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247584652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247584652]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202247585651]: Gas fee: 0 | 50.0 from Debug Reward --> 50.0 to q 
+  Transaction [0416202450887039]: Gas fee: 0.0 | 500.0 from q --> 500.0 to redbar 
+  Transaction [0416202903387787]: Gas fee: 0 | 50.0 from Signup Reward --> 50.0 to adna 
+----------------------------------------------------------------
+Nonce: 300
+----------------------------------------------------------------
+Previous Block Hash: 0005d2b15bcb42a6dd874ea51891d5b5fcce1efffc0e3f1a668df8c5cbc7f8a9
+----------------------------------------------------------------
+Current Block Hash: 000c98f0e2eef718340d403f1ec0f1cc9e013eae2cd8f6e54b65b4ff61e2e062
+----------------------------------------------------------------
+

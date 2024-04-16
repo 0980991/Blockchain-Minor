@@ -9,7 +9,8 @@ class HelperFunctions:
         os.system('cls' if os.name == 'nt' else 'clear')
 
 
-    def optionsMenu(self, header, options, clear=True):
+    def optionsMenu(self, header, options, clear=False):
+        # TODO: pressing'q' twice will break application. IMplement while loop
         # Input: List of options
         # Output: Index + 1 of the option that the user selected
         # Output: -1 if the user wants to go back in the menu
@@ -33,7 +34,7 @@ class HelperFunctions:
         return int(choice) - 1
 
 
-    def yesNoInput(self, question='', default_yes=True, clear=True):
+    def yesNoInput(self, question='', default_yes=True, clear=False):
         if clear:
             self.clear()
 
@@ -79,6 +80,12 @@ class HelperFunctions:
             else:
                 print("Invalid input. Please enter 'b' or 'cancel x' where x is an integer.")
 
+    @classmethod
+    def logEvent(self, log_message):
+        with open("hash_log.txt", "a") as f:
+            f.write(log_message)
+            f.write("\n")
+
     def enterToContinue(self, message=''):
         input(str(message) + '\nPlease press enter to continue...')
 
@@ -118,9 +125,12 @@ class HelperFunctions:
         output = f'{6*"*"}{(len(msg)*"*")}\n|  {msg}  |\n{6*"*"}{(len(msg)*"*")}\n'
         return output
 
+    def prettyString(self, msg):
+        output = f'{6*"*"}{(len(msg)*"*")}\n|  {msg}  |\n{6*"*"}{(len(msg)*"*")}\n'
+        return output
 
     def prettyPrint(self, msg):
-        print(prettyString(msg))
+        print(self.prettyString(msg))
 
 
     def appendStrings(self, list_of_strings, divider='|', left_border='|'):
@@ -160,6 +170,11 @@ class HelperFunctions:
         mls = appendMultiRowStrings(mls, '')
         return mls
         '''
+        
+    @classmethod
+    def printNestedList(self, nested_list, *indices):
+        print('\n'.join(str([sublist[i] for i in indices]) for sublist in nested_list))
+
 
     def separateRows(self, string_list, title_col_length, title_row_length):
         row = ''

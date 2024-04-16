@@ -8,9 +8,9 @@
 
 [ ] A user can add a new block to the chain if the block is successfully mined.
 
-[ ] When a **trans**action is created by a user, the transaction will be placed in a transactions pool.
+[ ] When a transaction is created by a user, the transaction will be placed in a transactions pool.
 
-[ ] A user can always check the validation of the whole chain.
+[ ] **A user can always check the validation of the whole chain.**
 
 [ ] A user can always check the validation of a specific block and add a validation flag to a valid block.
 
@@ -145,4 +145,4 @@ Security:
 
 [ ] readUserInput should be able to go back a prompt. Currently its cancels the entire function.
 
-[ ] Display usernames isntead of public keys in things like Tx and Txpools
+[x] Display usernames isntead of public keys in things like Tx and Txpools
