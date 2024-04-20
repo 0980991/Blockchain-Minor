@@ -3,9 +3,8 @@ from GCUser import GCUser
 from TxPool import TxPool
 from GCTx import GCTx
 from GCAccounts import GCAccounts
-from helper_functions import HelperFunctions
+import HelperFunctions as hf
 
-hf = HelperFunctions()
 from GCBlock import GCBlock
 from Signature import *
 import pickle

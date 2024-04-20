@@ -8,7 +8,7 @@ class GCTx:
     # TODO : ID resets when program resets. It should continue from te last ID
     def __init__(self, inputs=None, outputs=None, gas_fee=0.0):
         self.time_stamp = dt.now()
-        self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')[4:]
+        self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')
 
         # Inputs are structured as [(pem_public_key, amount, username)]
         if inputs is None:
@@ -69,6 +69,12 @@ class GCTx:
         tx_data.append(self.outputs)
         tx_data.append(self.reqd)
         return tx_data
+
+    def userInOutputs(self, username):
+        for output in self.outputs:
+            if output[2] == username:
+                return True
+        return False
 
     def isValid(self):
         total_in = 0

@@ -1,13 +1,12 @@
 import pickle
 from GCBlock import GCBlock
-from helper_functions import HelperFunctions
+import HelperFunctions as hf
 from datetime import datetime as dt
 from datetime import timedelta as td
 
 
 class TxPool():
     def __init__(self):
-        self.hf = HelperFunctions()
         self.transactions = []
 
     def add(self, tx):
@@ -17,14 +16,14 @@ class TxPool():
     def clear(self):
         self.transactions = []
 
-    def getUserTransactions(self, username):
+    def getUserTransactions(self, pem_public_key):
         user_transactions = []
         for tx in self.transactions:
-            if tx.inputs[0][0] == username:
+            if tx.inputs[0][0] == pem_public_key:
                 user_transactions.append(tx)
         tx_str = ""
-        for tx in user_transactions:
-            tx_str += 64*"=" + "\n" + str(tx) + "\n"
+        for i, tx in enumerate(user_transactions):
+            tx_str += f"[{i+1}]" + 60*"=" + "\n" + str(tx) + "\n"
         return tx_str
 
     def remove(self, tx_id):
@@ -41,7 +40,7 @@ class TxPool():
             self.transactions = transactions
         except FileNotFoundError:
             print("TxPool.dat not found!")
-            # if self.hf.yesNoInput("Error! TxPool.dat could not be located. Make sure it is stored in the same directory as the goodchain.py file\nWould you like to create a new emtpy file?"):
+            # if hf.yesNoInput("Error! TxPool.dat could not be located. Make sure it is stored in the same directory as the goodchain.py file\nWould you like to create a new emtpy file?"):
             #     self.save()
 
     def save(self, data_file="TxPool.dat"):
@@ -65,28 +64,34 @@ class TxPool():
         reward_transactions = []
         regular_transactions = []
         for tx in self.transactions:
-            if tx.inputs[0] == "REWARD":
+            if tx.inputs[0][0] == "REWARD":
                 reward_transactions.append(tx)
             else:
                 regular_transactions.append(tx)
 
         sorted_transactions = sorted(regular_transactions, key=sort_key)
+
         self.transactions = reward_transactions + sorted_transactions
         return
 
     def removeTx(self):
-        self.transactions = self.transactions[5:]
-        
+        self.transactions = self.transactions[10:]
 
+    def get(self, tx_id):
+        for tx in self.transactions:
+            if tx.id == tx_id:
+                return tx
+        return None
+    
     def getTxData(self):
         tx_data = self.transactions[:10]
         return tx_data
-    
+
     def __str__(self):
         tx_str = ""
         if self.transactions == []:
-            return self.hf.prettyString("The transaction pool is currently empty.")
-        
+            return hf.prettyString("The transaction pool is currently empty.")
+
         for i, tx in enumerate(self.transactions):
             tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
         return tx_str
