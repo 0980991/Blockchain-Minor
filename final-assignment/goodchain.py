@@ -30,49 +30,73 @@ class GoodChainApp():
         self.logged_in = False
         self.user = None
         self.options = None
+        self.show_notifications = True
         self.setMenuOptions()
-
-    def test(self):
-        users = self.accounts.loadUsers()
-        user1 = users[0]
-        user2 = users[1]
-        user3 = users[2]
-        tx_1 = GCTx([(user1[0], 50.0, user1[2])],
-                         [(user2[0], 40.0, user2[2])],
-                         10.0)
-        self.tx_pool.add(tx_1)
-        # self.tx_pool.sort()
-        tx_2 = GCTx([(user2[0], 10.0, user1[2])],
-                         [(user2[1], 10.0, user2[2])],
-                         0.0)
-        self.tx_pool.add(tx_2)
-        self.tx_pool.sort()
-        tx_3 = GCTx([(user1[0], 10.0, user3[2])],
-                         [(user2[1], 1.0, user2[2])],
-                         9.0)
-        self.tx_pool.add(tx_3)
-        # self.tx_pool.sort()
-        tx_4 = GCTx([("REWARD", 50.0, "Debug Reward")],
-                         [(user3[0], 50.0, user3[2])])
-        self.tx_pool.add(tx_4)
-        # self.tx_pool.sort()
-        tx_5 = GCTx([("REWARD", 50.0, "Debug Reward II ")],
-                         [(user1[0], 50.0, user1[2])])
-        self.tx_pool.add(tx_5)
-        self.tx_pool.sort()
-
-        hf.enterToContinue()
-        pass
 
 
     def start(self):
-        # print*.test()
         while True:
             hf.clear()
             print(self.getBanner())
-            choice = hf.optionsMenu("Welcome to the GoodChain application.\nWhat would you like to do?", self.options, prompt=self.prompt)
+            choice = hf.optionsMenu(f"\nWhat would you like to do?\n(Select an option by typing 1-{len(self.options)} and pressing 'Enter'.)", self.options, prompt=self.prompt)
             self.options[choice][0]()
 
+    def defaultNodeActions(self):
+        # Perform default node actions:
+        # 1. Validate newly mined block if necessary and if not mined by user and user hasnt already validated the block
+        if not self.blockchain.latest_block.getValidationBools().count(True) > 2 and self.blockchain.latest_block.mined_by != self.user.username and not self.blockchain.latest_block.userHasAlreadyValidated(self.user.username):
+            for i, flag in enumerate(self.blockchain.latest_block.validation_flags):
+                if flag[0] is None:
+                    if self.blockchain.validate(): # This validates whether the tx is valid
+                        self.blockchain.latest_block.validation_flags[i] = [True, self.user.username]
+                        self.blockchain.save()
+                        notification_msg = f"You have validated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
+                        self.user.notifications.append(notification_msg)
+                        self.options[0]
+                        if i == 2:
+                            receiver_username = self.blockchain.latest_block.mined_by
+                            receiver_pem_public_key = self.accounts.publicKeyFromUsername(receiver_username)
+                            reward_sum = 50.0 # Base reward
+                            for tx in self.blockchain.latest_block.transactions:
+                                reward_sum += tx.gas_fee
+                            tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(receiver_pem_public_key, reward_sum, receiver_username)])
+                            self.tx_pool.add(tx_reward)
+                            self.tx_pool.sort()
+                            self.tx_pool.save()
+                            notification_msg = f"You have created a reward transaction for {self.blockchain.latest_block.mined_by} for mining Block [{self.blockchain.latest_block.id}]"
+                            self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
+                            self.user.notifications.append(notification_msg)
+                    else:
+                        self.blockchain.latest_block.validation_flags[i] = [False, self.user.username]
+                        notification_msg = f"You have invalidated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
+                        self.user.notifications.append(notification_msg)
+                        # 2. Check if block is fully invalidated and delete it if it is.
+                        if i == 2:
+                            for tx in self.blockchain.latest_block.transactions:
+                                if tx.isValid():
+                                    self.tx_pool.append(tx)
+                                else:
+                                    #Return funds (Refunds for other users are calculate when they login)
+                                    if tx.inputs[0][0] == self.user.pem_public_key:
+                                        self.user.balance += tx.inputs[0][1] - tx.outputs[-1][1]
+                            self.tx_pool.sort()
+                            self.tx_pool.save()
+                            self.blockchain.latest_block = self.blockchain.latest_block.previous_block
+                    break
+                print()
+        # elif self.blockchain.latest_block.validation_flags.count(False) > 2:
+        #     # TODO: Remove Block and return transactions
+
+
+
+        # 3. Remove any INVALiD transactions in pool (Detects tampering since a tx can only be added to the pool if it is valid)
+        removed_tx_ids, user_return_sum = self.tx_pool.purgeInvalidUserTx(self.user.pem_public_key)
+        if removed_tx_ids != []:
+            notification_msg = f"Your transactions: {''.join([tx_id + ', ' if index < len(removed_tx_ids) - 1 else tx_id for index, tx_id in enumerate(removed_tx_ids)])} are invalid and have been deleted from the transaction pool."
+            self.user.notifications.append(notification_msg)
+        self.user.balance += user_return_sum
+        
+        
 
     def exit(self):
         if self.logged_in:
@@ -80,6 +104,7 @@ class GoodChainApp():
                 sys.exit()
             return
         sys.exit()
+
 
     def explore(self):
         hf.enterToContinue(str(self.blockchain))
@@ -98,12 +123,12 @@ class GoodChainApp():
                 user = self.accounts.validateAccount(username, pw_hash)
                 if user is not None:
                     self.user = user
-                    self.user.utxo = self.blockchain.calculateUTXO(self.user.pem_public_key, self.tx_pool)
+                    self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
                     self.prompt = f"({user.username})> "
                     self.logged_in = True
                     self.setMenuOptions()
+                    self.defaultNodeActions()
                     hf.enterToContinue("\n[+] Login Sucessful!\n")
-                    # self.test()
                     return
                 else:
                     if hf.yesNoInput("Login Failed! You've entered an incorrect username or password.\nDo you want to try again?"):
@@ -151,16 +176,18 @@ class GoodChainApp():
     def setMenuOptions(self):
         if self.logged_in:
             self.options = [
+                [self.viewNotifications, f"View your Notifications ({len(self.user.notifications)})"],
                 [self.explore, "Explore the Blockchain ✓"],
-                [self.transfer, "Transfer Coins (Still requires validation)"],
-                [self.checkBalance, "Check Balance"],
+                [self.validateChain, "Validate the blockchain"],
+                [self.transfer, "Create a transaction <TEST EDGE CASES>"],
                 [self.viewTransactionPool, "View Transaction Pool ✓"],
                 [self.userTransactions, "Your Pending Transactions ✓"],
+                [self.userTransactionHistory, "Your Transaction History"],
                 [self.mineBlock, "Mine a Block"],
-                [self.viewAccountDetails, "View Your Account Details (private & public key)"],
+                [self.viewAccountDetails, "View your Account Details (Balance, Private/Public key)"],
                 [self.logout, "Logout"],
                 [self.exit, "Exit"],
-                [self.addTransactionsDebug, "Add Tx (DEBUG)"],
+                [self.runSimDebug, "Run Mining Simulation (DEBUG)"],
                 [self.showUsersDebug, "Show all users (DEBUG)"]
             ]
         else:
@@ -171,70 +198,70 @@ class GoodChainApp():
                 [self.exit,"Exit"]
             ]
 
-    def addTransactionsDebug(self):
-        for i in range(5):
-            tx_reward = GCTx([("REWARD", 50.0, "Debug Reward")], [(self.user.pem_public_key, 50.0, self.user.username)])
-            self.tx_pool.add(tx_reward)
-            self.tx_pool.sort()
-            time.sleep(0.01)
-            # while username == self.user.username:
-            #     username = r.choice(["joe", "mark", "q", "ari"])
-            # send_amount = r.choice([20, 40, 50.0, 1000, 100])
-            # gas_fee = r.choice([1,2,4,8,16])
-            # receive_amount = send_amount - gas_fee
-            # ins = [(self.user.pem_public_key, send_amount, self.user.username)]
-            # utxo_amount = 0
-            # outs = [(self.accounts.publicKeyFromUsername(username), receive_amount, username), (self.user.pem_public_key, utxo_amount, self.user.username)]
-            # tx = GCTx(ins, outs, gas_fee)
-            # tx.sign(self.user.private_key)
-            # self.tx_pool.add(tx)
+    def runSimDebug(self):
+        times = []
+        nr_blocks = int(input("enter nr of blocks" + "\n" + self.prompt))
+        for j in range(nr_blocks):
+            for i in range(5):
+                user = self.accounts.users[i]
+                if i==0:
+                    user.balance = 500
+                if i != 0:
+                    user2 = self.accounts.users[0]
+                else:
+                    user2 = self.accounts.users[2]
+                # tx_reward = GCTx([("REWARD", 50.0, "Debug Reward")], [(self.user.pem_public_key, 50.0, self.user.username)])
+                amount =  r.uniform(10.0, 100.0)
+                gas_fee = amount/10
+                tx_reward = GCTx([(user.pem_public_key, amount, user.username)], [(user2.pem_public_key, amount, user2.username)], gas_fee)
+                tx_reward.sign(user.private_key)
+                self.tx_pool.add(tx_reward)
+                self.tx_pool.sort()
+                time.sleep(0.01)
+            times.append(self.mineBlock())
+        times.sort()
+        times.reverse()
+        for t in times:
+            print(t)
+        hf.enterToContinue()
+
 
     def transfer(self):
         valid_input = False
+        back_flag = True
         while not valid_input:
             try:
-                username, amount, gas_fee = hf.readUserInput(["Enter the username of the receiver", "Please enter the amount you would like to transfer", "Please enter the gas fee amount (Gas fee will be subtracted from the transfer amount.)"], prompt=self.prompt)
+                username, amount, gas_fee = hf.readUserInput(["Enter the username of the receiver", f"Please enter the amount you would like to transfer. | Current balance: {self.user.balance}", "Please enter the gas fee amount (Gas fee will be subtracted from the transfer amount.)"], prompt=self.prompt)
+                back_flag = False
+                send_amount = float(amount)
+                gas_fee = float(gas_fee)
                 valid_input=True
             except ValueError:
                 # User canceled and the function returned an empty list.
-                return
+                if back_flag:
+                    return
+                hf.enterToContinue("ERROR: The amount and gas fee must be a numerical value.")
 
-        send_amount = float(amount)
-        gas_fee = float(gas_fee)
+
         receive_amount = send_amount - gas_fee
         if gas_fee >= 0 and gas_fee < send_amount:
             if self.user.username != username and self.accounts.userExists(username):
 
-                utxo_sum = 0
-                utxo_i = 0
-                while utxo_sum < send_amount:
-                    # TODO utxo_i Currently gives an index error if send amount > current balance
-                    utxo_sum += self.user.utxo[utxo_i][1]
-                    utxo_i += 1
-                sender_change = utxo_sum - send_amount
-
-                if sender_change > 0:
-                    # Add Sender change output
-                    tx = GCTx([(self.user.pem_public_key, utxo_sum, self.user.username)],
-                            [(self.accounts.publicKeyFromUsername(username), receive_amount, username), (self.user.pem_public_key,sender_change, self.user.username)],
-                            gas_fee)
-                else:
-                    tx = GCTx([(self.user.pem_public_key, send_amount, self.user.username)],
-                            [(self.accounts.publicKeyFromUsername(username), receive_amount, username)],
-                            gas_fee)
+                sender_change = self.user.balance - send_amount
+                tx = GCTx([(self.user.pem_public_key, self.user.balance, self.user.username)],
+                        [(self.accounts.publicKeyFromUsername(username), receive_amount, username), (self.user.pem_public_key,sender_change, self.user.username)],
+                        gas_fee)
 
                 tx.sign(self.user.private_key)
+
                 if tx.isValid():
                     if hf.yesNoInput(f"==={tx}\nAre you sure you want to create a transaction with the following details?"):
                         self.tx_pool.add(tx)
                         self.tx_pool.sort()
+                        self.tx_pool.save()
 
                         # REMOVE spent outputs
-                        self.user.utxo = self.user.utxo[utxo_i:]
-                        # ADD sender change output to spendable outputs
-                        if sender_change != 0:
-                            self.user.utxo.append([self.user.pem_public_key, sender_change, self.user.username])
-
+                        self.user.balance -= send_amount
                         hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
                         return
                     else:
@@ -249,38 +276,52 @@ class GoodChainApp():
         else:
             hf.enterToContinue(f"ERROR: The gas fee must be between 0 and {send_amount}.")
 
-    def checkBalance(self):
-        balance = 0
-        if self.user.utxo != []:
-            print("List of unspend transaction outputs (UTXO):")
-            for i, output in enumerate(self.user.utxo):
-                balance += output[1]
-                print(f"{i+1}. {output[1]}")
-        hf.prettyPrint(f"Total Balance: {balance}")
-        hf.enterToContinue()
-
     def viewTransactionPool(self):
+        
         print(self.tx_pool)
         hf.enterToContinue()
 
+    def userTransactionHistory(self):
+        user_tx_pool = self.tx_pool.getUserTransactions(self.user.pem_public_key)
+        user_tx_blockchain = self.blockchain.getUserTransactions(self.user.pem_public_key)
+
+        tx_str = "Transactions currently in the Transaction Pool:\n"
+        for i, tx in enumerate(user_tx_pool):
+            tx_str += f"[{i+1}] {str(tx)}\n"
+        if user_tx_pool != []:
+            print(tx_str)
+        else:
+            print("<Currently no transactions in the transaction pool>")
+
+        tx_str = "Transactions in the blockchain:\n"
+        for i, tx in enumerate(user_tx_blockchain):
+            tx_str += f"[{i+1}] {str(tx)}\n"
+        if user_tx_blockchain != []:
+            print(tx_str)
+        else:
+            print("<Currently no transactions in the blockchain!")
+        hf.enterToContinue()
+
     def userTransactions(self):
-        usr_tx_str = self.tx_pool.getUserTransactions(self.user.pem_public_key)
-        if usr_tx_str == "":
+        usr_tx = self.tx_pool.getUserTransactions(self.user.pem_public_key)
+        if usr_tx == []:
             hf.prettyPrint("You currently have no pending transactions.")
         else:
-            print(usr_tx_str)
+            tx_str = ""
+            for i, tx in enumerate(usr_tx):
+                tx_str += f"[{i+1}]" + 60*"=" + "\n" + str(tx) + "\n"
+            print(tx_str)
+        print("\nTo cancel a transaction, copy the transaction ID and use the 'cancel' command to cancel it")
         tx_id = hf.readUserInput2(f"Enter 'b' to go back\nEnter 'cancel x' (where x is a transaction ID, e.g. 'cancel 20240419113713100785') to cancel a transaction in the transaction pool:", prompt=self.prompt)
         if tx_id == 'b':
             return
         else:
             tx = self.tx_pool.get(tx_id)
-            # Check if there is a 'sender change' output in the tx 
-            no_sender_change = tx.userInOutputs(self.user.username)
-            # Add previously removed output back to the start of the list and REMOVE previously appended output for 'sender change' with pop()
-            if self.user.utxo != [] or no_sender_change:
-                self.user.utxo.pop()
-            old_utxo = [tx.inputs[0]]
-            self.user.utxo = old_utxo + self.user.utxo
+            if tx.inputs[0][0] == self.user.pem_public_key:
+                self.user.balance += tx.inputs[0][1] - tx.outputs[-1][1]
+            else:
+                hf.enterToContinue("ERROR: You can only delete your own transactions from the pool!")
+                return
             self.tx_pool.remove(tx_id)
             self.tx_pool.save()
             hf.enterToContinue(hf.prettyString(f"Transaction [{tx_id}]: Canceled Sucesfully!"))
@@ -289,46 +330,55 @@ class GoodChainApp():
     def mineBlock(self):
         #TODO:
         # previous Hash of new block is the unmined hash of the previous block
+        mining_allowed = self.blockchain.miningAllowed(self.tx_pool)
+        if mining_allowed:
+            prev_block = self.blockchain.latest_block
+            verbose = hf.yesNoInput("\nShow hash output when mining?")
+            print("\n<...Mining in progress...>\n")
+            new_block  = GCBlock(self.tx_pool.getTxData(), prev_block)
+            new_block.mined_by = self.user.username
+            start_time = time.time()
+            new_block.mine(verbose)
+            end_time = time.time() - start_time
+            # hf.logEvent(f"{64*"-"}\nNew Block Mined:\n{new_block.id} with hah: {new_block.blockHash}")
 
-        # Check if there 5 tx in transaction pool
-        if len(self.tx_pool.transactions) < 5:
-            hf.enterToContinue(f"There are currently {len(self.tx_pool.transactions)} in the transaction pool but at least 5 are required to create block.")
-            return
+            self.blockchain.add(new_block)
+            self.blockchain.save()
+            self.tx_pool.removeTx()
+            self.tx_pool.save()
 
-        prev_block = self.blockchain.latest_block
-        verbose = hf.yesNoInput("\nShow hash output when mining?")
-        print("\n<...Mining in progress...>\n")
-        new_block  = GCBlock(self.tx_pool.getTxData(), prev_block)
-        start_time = time.time()
-        new_block.mine(verbose)
-        end_time = time.time() - start_time
-        # hf.logEvent(f"{64*"-"}\nNew Block Mined:\n{new_block.id} with hah: {new_block.blockHash}")
-        reward_sum = 50.0 # Base reward
-        for tx in new_block.transactions:
-            reward_sum += tx.gas_fee
-        self.blockchain.add(new_block)
-        self.blockchain.save()
-        self.tx_pool.removeTx()
-        self.tx_pool.save()
-        tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(self.user.pem_public_key, reward_sum, self.user.username)])
-        self.tx_pool.add(tx_reward)
-        self.tx_pool.sort()
-
-        self.user.utxo = self.blockchain.calculateUTXO(self.user.pem_public_key, self.tx_pool)
-        #######
-        hf.enterToContinue(f"{64*'-'}\nMining Succesful with a nonce of: {new_block.nonce}\nHash: {new_block.blockHash}\nTime: {end_time}\nYour Mining Reward: {reward_sum}")
+            self.user.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
+            self.setMenuOptions()
+            hf.enterToContinue(f"{64*'-'}\nMining Succesful with a nonce of: {new_block.nonce}\nHash: {new_block.blockHash}\nTime: {end_time}\nYour Mining Reward: {reward_sum}")
+            return end_time
+        else:
+            hf.enterToContinue()
 
     def viewAccountDetails(self):
-        print(f"{64*'='}\nUsername: {self.user.username}\n{64*'-'}\nPublic Key:\n{self.user.pem_public_key.decode('utf-8')}\n{self.user.pem_private_key.decode('utf-8')}\n")
+        print(f"{64*'='}\n{64*'-'}\nPublic Key:\n{self.user.pem_public_key.decode('utf-8')}\n{self.user.pem_private_key.decode('utf-8')}\nUsername: {self.user.username}\n{hf.prettyString(f'Balance: {self.user.balance}')}\n")
         hf.enterToContinue()
 
 
     def getBanner(self):
         banners = []
-        with open(".\\banners.txt", 'r', encoding='utf-16le') as file:
+        with open("./banners.txt", 'r', encoding='utf-16le') as file:
             banners_text = file.read()
             banners = banners_text.split('\n,\n')
         return r.choice(banners)
+
+    def validateChain(self):
+        if self.blockchain.validate():
+            message = "Your version of the GoodChain is VALID!"
+        else:
+            message = "Your version of the GoodChain is INVALID!"
+        hf.enterToContinue(hf.prettyString(message))
+
+    def viewNotifications(self):
+        output_str = ""
+        for i, n in enumerate(self.user.notifications):
+            output_str += f"{i+1}. {n}\n"
+
+        hf.enterToContinue(output_str)
 
 if __name__ == "__main__":
     app = GoodChainApp()

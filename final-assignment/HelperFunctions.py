@@ -69,12 +69,8 @@ def readUserInput2(message, clear=False, prompt="> "):
         elif user_input.startswith('cancel'):
             args = user_input.split()
             return args[1]
-            # if len(args) == 2 and args[1].isdigit():
-            #     return int(args[1])
-            # else:
-            #     print("Invalid input. Please enter 'b' or 'cancel x' where x is an integer.")
         else:
-            print("Invalid input. " + message)
+            print("ERROR: Invalid input!\n")
 
 def logEvent(log_message):
     with open("hash_log.txt", "a") as f:
@@ -117,11 +113,7 @@ def dbOutputToList(listoftuples):
 
 
 def prettyString(msg):
-    output = f'{6*"*"}{(len(msg)*"*")}\n|  {msg}  |\n{6*"*"}{(len(msg)*"*")}\n'
-    return output
-
-def prettyString(msg):
-    output = f'{6*"*"}{(len(msg)*"*")}\n|  {msg}  |\n{6*"*"}{(len(msg)*"*")}\n'
+    output = f'{6*"*"}{(len(str(msg))*"*")}\n|  {msg}  |\n{6*"*"}{(len(str(msg))*"*")}\n'
     return output
 
 def prettyPrint(msg):

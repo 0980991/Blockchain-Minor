@@ -1,17 +1,24 @@
 import sqlite3
+from sqlite3 import DatabaseError
+import HelperFunctions as hf
+import sys
 
 class DbInterface:
     def __init__(self):
-        db = sqlite3.connect('GoodChain.db')
-        cursor = db.cursor()
-        cursor.execute('''CREATE TABLE IF NOT EXISTS Accounts(
-        user_name TEXT NOT NULL,
-        password HASH NOT NULL,
-        private_key HASH NOT NULL,
-        public_key HASH NOT NULL
-        );''')
-        db.commit()
-        db.close()
+        try:
+            db = sqlite3.connect('GoodChain.db')
+            cursor = db.cursor()
+            cursor.execute('''CREATE TABLE IF NOT EXISTS Accounts(
+            user_name TEXT NOT NULL,
+            password HASH NOT NULL,
+            private_key HASH NOT NULL,
+            public_key HASH NOT NULL
+            );''')
+            db.commit()
+            db.close()
+        except DatabaseError:
+            hf.enterToContinue("ERROR: GoodChain.db  has been corrupted and cannot be opened.\nPlease delete the file and restart the program.")
+            sys.exit()
 
     @classmethod
     def deleteUser(self, username):

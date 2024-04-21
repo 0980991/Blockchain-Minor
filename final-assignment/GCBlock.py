@@ -10,21 +10,23 @@ import HelperFunctions as hf
 
 
 class GCBlock:
-    def __init__(self, data, previousBlock=None):
-        self.previousBlock = previousBlock
+    def __init__(self, data, previous_block=None):
+        self.previous_block = previous_block
         self.time_stamp = dt.now()
         self.transactions = data
         self.nonce = 0
         self.leading_zeros = 3
-        if previousBlock is None:
+        self.validation_flags = [[None, ""], [None, ""], [None, ""]]
+        self.mined_by = ""
+        if previous_block is None:
             self.id = 0
-            self.previousHash = None
+            self.previous_hash = None
         else:
-            self.id = previousBlock.id + 1
+            self.id = previous_block.id + 1
             ### THIS LINE CAUSES BUG:
-            # prevH = previousBlock.computeHash(True)
+            # prevH = previous_block.computeHash(True)
             #######################################
-            self.previousHash = previousBlock.blockHash
+            self.previous_hash = previous_block.blockHash
         new_block_hash = self.computeHash(True)
         # hf.logEvent(f"New blockhash set for block {self.id} with hash {new_block_hash}")
         self.blockHash = new_block_hash
@@ -40,36 +42,51 @@ class GCBlock:
         digest.update(bytes(str(self.id), 'utf8'))
         digest.update(bytes(str(self.time_stamp), 'utf8'))
         digest.update(bytes(tx_str,'utf8'))
-        digest.update(bytes(str(self.previousHash),'utf8'))
+        digest.update(bytes(str(self.previous_hash),'utf8'))
         digest.update(bytes(str(self.nonce), 'utf8'))
         h = digest.finalize()
         h = h.hex()
         if log:
             log_str = 64*"-" + "\n"
-            log_str += f"{str(self.id)}\n{str(tx_str)}\n{str(self.previousHash)}\n{str(self.nonce)}"
+            log_str += f"{str(self.id)}\n{str(tx_str)}\n{str(self.previous_hash)}\n{str(self.nonce)}"
             hf.logEvent(log_str)
         return h
 
+    def userHasAlreadyValidated(self, username):
+        for flag in self.validation_flags:
+            if flag[1] == username:
+                return True
+
+    def getRewardSum(self):
+        reward_sum = 50
+        for tx in self.transactions:
+            reward_sum += tx.gas_fee
+        return reward_sum
+
+    def getValidationBools(self):
+        bools = []
+        for flag in self.validation_flags:
+            bools.append(flag[0])
+        return bools
+
     def validate(self):
-        # 1. Check if tranactions in block are valid
         for tx in self.transactions:
             if not tx.isValid():
                 return False
         # 2. Check if previous
-        if self.previousBlock == None:
-            cur_hash = self.computeHash()
+        if self.previous_block == None:
             if self.blockHash == self.computeHash():
                 return True
             else:
                 return False
         else:
             current_block_validity = self.blockHash == self.computeHash()
-            previous_block_validity = self.previousBlock.validate()
+            previous_block_validity = self.previous_block.validate()
             return current_block_validity and previous_block_validity
 
     def mine(self, verbose):
-        # if self.previousBlock is not None:
-        #     self.previousHash=self.previousBlock.computeHash()
+        # if self.previous_block is not None:
+        #     self.previous_hash=self.previous_block.computeHash()
         #     print()
         zeroes = '0'*self.leading_zeros
         difficulty = 16
@@ -91,7 +108,7 @@ class GCBlock:
             if time.time() - start_time > 10 and self.nonce % 500 == 0 and difficulty < 256:
                 if verbose:
                     print(f"Decreasing difficulty from {difficulty} to {difficulty+10}")
-                difficulty += 10
+                difficulty += 20
         self.blockHash = new_hash
 
     def __str__(self):
@@ -103,8 +120,9 @@ class GCBlock:
                     out_str += " & "
                 out_str += f"{outs[1]} to {outs[2]}"
             data_str += f"[{tx_i+1}] Transaction [{tx.id}]: Gas fee: {tx.gas_fee} | {tx.inputs[0][1]} from {tx.inputs[0][2]} --> {out_str} \n"
-        string =  f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp}"
+        string =  f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp} by {self.mined_by}"
         string += f"\n{64*'-'}\nData: {data_str}{64*'-'}\n"
-        string += f"Nonce: {self.nonce}\n{64*'-'}\nPrevious Block Hash: {self.previousHash}\n{64*'-'}\nCurrent Block Hash: {self.blockHash}\n"
-        string += f"{(64*'-')}\n"
+        string += f"Nonce: {self.nonce}\n{64*'-'}\nPrevious Block Hash: {self.previous_hash}\n{64*'-'}\nCurrent Block Hash: {self.blockHash}\n"
+
+        string += f"{(64*'-')}\nValidation Flags: {str(self.validation_flags[0][0])}, {str(self.validation_flags[1][0])}, {str(self.validation_flags[2][0])}\n{(64*'-')}\n"
         return string

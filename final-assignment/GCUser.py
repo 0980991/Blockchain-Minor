@@ -4,8 +4,8 @@ class GCUser:
     def __init__(self, username, pw_hash, pem_private_key=None, pem_public_key=None):
         self.username = username
         self.pw_hash = pw_hash
-        # utxo format [0: pem_public key, 1: amount, 2: username]
-        self.utxo = None # A list of unspend outputs, used to determine the balance of the user
+        self.balance = 0
+        self.notifications = []
 
         if pem_private_key is None:
             self.private_key = Signature.generatePrivateKey()

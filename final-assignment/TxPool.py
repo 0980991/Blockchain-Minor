@@ -1,8 +1,9 @@
 import pickle
+from pickle import UnpicklingError
 from GCBlock import GCBlock
 import HelperFunctions as hf
-from datetime import datetime as dt
-from datetime import timedelta as td
+from datetime import datetime as dt, timedelta
+import sys
 
 
 class TxPool():
@@ -21,10 +22,22 @@ class TxPool():
         for tx in self.transactions:
             if tx.inputs[0][0] == pem_public_key:
                 user_transactions.append(tx)
-        tx_str = ""
-        for i, tx in enumerate(user_transactions):
-            tx_str += f"[{i+1}]" + 60*"=" + "\n" + str(tx) + "\n"
-        return tx_str
+        return user_transactions
+
+    def purgeInvalidUserTx(self, pem_public_key):
+        user_return_sum = 0
+        tx_ids_to_remove = []
+        for tx in self.transactions:
+            if tx.inputs[0][0]==pem_public_key and tx.isValid():
+                user_return_sum += tx.inputs[0][1] - tx.outputs[-1][1]
+                tx_ids_to_remove.append(tx.id)
+
+
+
+        for tx_id in tx_ids_to_remove:
+            self.remove(tx_id)
+
+        return (tx_ids_to_remove, user_return_sum)
 
     def remove(self, tx_id):
         new_tx_list = [tx for tx in self.transactions if tx.id != tx_id]
@@ -39,9 +52,13 @@ class TxPool():
             fh.close()
             self.transactions = transactions
         except FileNotFoundError:
+            # TODO: Add to notification section
             print("TxPool.dat not found!")
             # if hf.yesNoInput("Error! TxPool.dat could not be located. Make sure it is stored in the same directory as the goodchain.py file\nWould you like to create a new emtpy file?"):
             #     self.save()
+        except UnpicklingError:
+            hf.enterToContinue("ERROR: TxPool.dat has been corrupted and cannot be opened.\n Please delete the file and restart the program.")
+            sys.exit()
 
     def save(self, data_file="TxPool.dat"):
         fh = open(data_file, 'wb')
@@ -54,9 +71,8 @@ class TxPool():
         # 2. Gas fee amount takes second priority*
         # 3. *If a transaction is older than 2 days, it will be prioritized over a high gas fee tx.
         # 4. Multiple transactions older than 2 days will be once again prioritized based on gas fee.
-        # TODO: Sorting function sorts reward functions last for some reason
         def sort_key(tx):
-            if tx.time_stamp < (dt.now()-td(days=2)):
+            if tx.time_stamp < (dt.now()-timedelta(days=2)):
                 return (0, -tx.time_stamp.timestamp())
             else:
                 return (1, -tx.gas_fee)
@@ -68,7 +84,7 @@ class TxPool():
                 reward_transactions.append(tx)
             else:
                 regular_transactions.append(tx)
-
+        regular_transactions.reverse()
         sorted_transactions = sorted(regular_transactions, key=sort_key)
 
         self.transactions = reward_transactions + sorted_transactions
@@ -82,7 +98,7 @@ class TxPool():
             if tx.id == tx_id:
                 return tx
         return None
-    
+
     def getTxData(self):
         tx_data = self.transactions[:10]
         return tx_data
@@ -93,5 +109,6 @@ class TxPool():
             return hf.prettyString("The transaction pool is currently empty.")
 
         for i, tx in enumerate(self.transactions):
-            tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
+            if tx.isValid():
+                tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
         return tx_str

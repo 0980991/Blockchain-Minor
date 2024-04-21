@@ -5,7 +5,6 @@ import random as r
 import GCAccounts
 
 class GCTx:
-    # TODO : ID resets when program resets. It should continue from te last ID
     def __init__(self, inputs=None, outputs=None, gas_fee=0.0):
         self.time_stamp = dt.now()
         self.id = self.time_stamp.strftime('%Y%m%d%H%M%S%f')
@@ -15,12 +14,13 @@ class GCTx:
             inputs = []
         self.inputs = inputs
         # Outputs are structured as [(pem_public_key, amount, username), (pem_public_key, amount, username)]
-        
+
         if outputs is None:
             outputs = []
 
         self.outputs = outputs
         self.gas_fee = gas_fee
+        self.is_valid = False
         self.sigs = []
         self.reqd = []
 
@@ -39,14 +39,15 @@ class GCTx:
             string += "<This transaction is not signed by the sender>\n"
         for sig in self.sigs:
             string += f"{str(sig)}\n"
-        string += f"{64*'-'}\nEXTRA REQUIRED SIGNATURES: "
-        if self.reqd == []:
-                string += "<No Extra Signatures>"
-        else:
-            for sig in self.reqd:
-                string += f"{str(sig)}"
 
-        string += f"\n{64*'='}"
+        # string += f"{64*'-'}\nEXTRA REQUIRED SIGNATURES: "
+        # if self.reqd == []:
+        #         string += "<No Extra Signatures>"
+        # else:
+        #     for sig in self.reqd:
+        #         string += f"{str(sig)}\N"
+
+        string += f"{64*'='}"
         return string
 
     def addInput(self, from_addr, amount):
@@ -84,14 +85,19 @@ class GCTx:
         for addr,amount,user in self.inputs:
             found = False
             # 1. Verify Sender Signatures
-            for sig in self.sigs:
-                if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
-                    found = True
+            if addr == "REWARD":
+                found = True
+            else:
+                for sig in self.sigs:
+                    if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
+                        found = True
             if not found:
+                self.is_valid = False
                 return False
 
             # 2. Verify input amount
             if amount < 0:
+                self.is_valid = False
                 return False
             total_in = total_in + amount
 
@@ -102,15 +108,19 @@ class GCTx:
                 if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
                     found = True
             if not found:
+                self.is_valid = False
                 return False
 
         for addr,amount,username in self.outputs:
             # 4. Verify the output amount is greater than 0
             if amount < 0:
+                self.is_valid = False
                 return False
             total_out = total_out + amount
 
         # 5. Verify input is greater the output
         if total_out > total_in:
-            return False
+            self.is_valid = False
+            return false
+        self.is_valid = True
         return True
