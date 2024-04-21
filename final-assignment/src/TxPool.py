@@ -28,7 +28,7 @@ class TxPool():
         user_return_sum = 0
         tx_ids_to_remove = []
         for tx in self.transactions:
-            if tx.inputs[0][0]==pem_public_key and tx.isValid():
+            if tx.inputs[0][0]==pem_public_key and not tx.isValid():
                 user_return_sum += tx.inputs[0][1] - tx.outputs[-1][1]
                 tx_ids_to_remove.append(tx.id)
 
@@ -42,10 +42,10 @@ class TxPool():
     def remove(self, tx_id):
         new_tx_list = [tx for tx in self.transactions if tx.id != tx_id]
         if self.transactions == new_tx_list:
-            print("ERROR: Transaction not found. No transaction has been removed")
+            print("ERROR [!]: Transaction not found. No transaction has been removed")
         self.transactions = new_tx_list
 
-    def load(self, data_file="TxPool.dat"):
+    def load(self, data_file="data/TxPool.dat"):
         try:
             fh = open(data_file, 'rb')
             transactions = pickle.load(fh)
@@ -53,14 +53,15 @@ class TxPool():
             self.transactions = transactions
         except FileNotFoundError:
             # TODO: Add to notification section
-            print("TxPool.dat not found!")
+
+            hf.enterToContinue("TxPool.dat not found!\nIf the system is launched for the first time the file will be created automatically.\nIf the TxPool.dat file already exists in the 'data' folder, make sure the 'goodchain.py' is launched from the root directory!")
             # if hf.yesNoInput("Error! TxPool.dat could not be located. Make sure it is stored in the same directory as the goodchain.py file\nWould you like to create a new emtpy file?"):
             #     self.save()
         except UnpicklingError:
-            hf.enterToContinue("ERROR: TxPool.dat has been corrupted and cannot be opened.\n Please delete the file and restart the program.")
+            hf.enterToContinue("ERROR [!]: TxPool.dat has been corrupted and cannot be opened.\n Please delete the file and restart the program.")
             sys.exit()
 
-    def save(self, data_file="TxPool.dat"):
+    def save(self, data_file="data/TxPool.dat"):
         fh = open(data_file, 'wb')
         pickle.dump(self.transactions, fh)
         fh.close()

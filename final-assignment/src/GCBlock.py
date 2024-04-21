@@ -21,14 +21,11 @@ class GCBlock:
         if previous_block is None:
             self.id = 0
             self.previous_hash = None
+            self.mined_by = "SYSTEM"
         else:
             self.id = previous_block.id + 1
-            ### THIS LINE CAUSES BUG:
-            # prevH = previous_block.computeHash(True)
-            #######################################
             self.previous_hash = previous_block.blockHash
         new_block_hash = self.computeHash(True)
-        # hf.logEvent(f"New blockhash set for block {self.id} with hash {new_block_hash}")
         self.blockHash = new_block_hash
 
     def addTx(self, Tx):
@@ -49,7 +46,6 @@ class GCBlock:
         if log:
             log_str = 64*"-" + "\n"
             log_str += f"{str(self.id)}\n{str(tx_str)}\n{str(self.previous_hash)}\n{str(self.nonce)}"
-            hf.logEvent(log_str)
         return h
 
     def userHasAlreadyValidated(self, username):
@@ -70,6 +66,7 @@ class GCBlock:
         return bools
 
     def validate(self):
+
         for tx in self.transactions:
             if not tx.isValid():
                 return False
@@ -85,16 +82,11 @@ class GCBlock:
             return current_block_validity and previous_block_validity
 
     def mine(self, verbose):
-        # if self.previous_block is not None:
-        #     self.previous_hash=self.previous_block.computeHash()
-        #     print()
         zeroes = '0'*self.leading_zeros
         difficulty = 16
         flag = True
         start_time = time.time()
-        ## QUICK MINE FOR DEBUG
-        zeroes = '000'
-        ##
+
         while flag:
             new_hash = self.computeHash()
 

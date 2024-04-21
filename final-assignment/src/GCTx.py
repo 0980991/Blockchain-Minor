@@ -1,6 +1,7 @@
 import Signature as s
 from datetime import datetime as dt
 from datetime import timedelta as td
+import HelperFunctions as hf
 import random as r
 import GCAccounts
 
@@ -93,34 +94,40 @@ class GCTx:
                         found = True
             if not found:
                 self.is_valid = False
+                hf.enterToContinue("ERROR: The transaction was not signed (correctly) and is not a REWARD transaction.")
                 return False
 
             # 2. Verify input amount
             if amount < 0:
                 self.is_valid = False
+                hf.enterToContinue("ERROR: The sent amount is less than 0")
                 return False
             total_in = total_in + amount
 
-        for addr in self.reqd:
-            found = False
-            for sig in self.sigs:
-                # 3. Verify required signatures against
-                if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
-                    found = True
-            if not found:
-                self.is_valid = False
-                return False
+        # for addr in self.reqd:
+        #     found = False
+        #     for sig in self.sigs:
+        #         # 3. Verify required signatures against
+        #         if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
+        #             found = True
+        #     if not found:
+        #         self.is_valid = False
+
+        #         return False
 
         for addr,amount,username in self.outputs:
             # 4. Verify the output amount is greater than 0
             if amount < 0:
                 self.is_valid = False
+                hf.enterToContinue("ERROR: The received amount is less than 0")
                 return False
             total_out = total_out + amount
 
         # 5. Verify input is greater the output
         if total_out > total_in:
             self.is_valid = False
-            return false
+            hf.enterToContinue("ERROR: The sum of outputs is greater than the sum of inputs!")
+
+            return False
         self.is_valid = True
         return True

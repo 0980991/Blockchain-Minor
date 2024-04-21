@@ -136,7 +136,7 @@ Security:
 
 [ ] A username (or hashed unique public key) must be used as the public account number of a user for any transaction.
 
-## ERROR HANDLING
+## ERROR [!] HANDLING
 [ ] readUserInput should have a type specification for the input.
 
 
