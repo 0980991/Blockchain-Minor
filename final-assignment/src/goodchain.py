@@ -110,7 +110,6 @@ class GoodChainApp():
         self.user.balance += user_return_sum
 
 
-
     def exit(self):
         if self.logged_in:
             if hf.yesNoInput("Are you sure you want Logout and Quit the application?"):
@@ -241,7 +240,7 @@ class GoodChainApp():
         back_flag = True
         while not valid_input:
             try:
-                username, amount, gas_fee = hf.readUserInput(["Enter the username of the receiver", f"Please enter the amount you would like to transfer. | Current balance: {self.user.balance}", "Please enter the gas fee amount (Gas fee will be subtracted from the transfer amount.)"], prompt=self.prompt)
+                username, amount, gas_fee = hf.readUserInput(["Enter the username of the receiver", f"Please enter the amount you would like to transfer. | Current balance: {self.user.balance}", f"Please enter the gas fee amount (Leftover balance: {self.user.balance}): "], prompt=self.prompt)
                 back_flag = False
                 send_amount = float(amount)
                 gas_fee = float(gas_fee)
@@ -284,8 +283,7 @@ class GoodChainApp():
                 else:
                     hf.enterToContinue(f"ERROR [!]: The transaction could not be added to the transaction pool as it is INVALID")
             else:
-                hf.enterToContinue("ERROR [!]: User not found")
-            # TODO Validate the receiver is not the user
+                hf.enterToContinue("ERROR [!]: User not found OR You've entered your own username")
         else:
             msg = ""
             if not check_send_amount:

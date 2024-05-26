@@ -92,8 +92,8 @@ def readUserInput3(message, clear=False, prompt="> "):
         else:
             print("ERROR [!]: Invalid input!\n")
 
-def logEvent(log_message):
-    with open("hash_log.txt", "a") as f:
+def logEvent(log_message, log_file="hash_log.txt"):
+    with open(log_file, "a") as f:
         f.write(log_message)
         f.write("\n")
 
