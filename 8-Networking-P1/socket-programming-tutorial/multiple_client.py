@@ -1,7 +1,8 @@
 import socket
 
+HOST="127.0.0.1"
 HOST = socket.gethostbyname('localhost')
-PORT = 5050        # Arbitrary non-privileged port
+PORT=6968
 
 ADDR = (HOST, PORT)
 HEADER_SIZE = 64
@@ -14,32 +15,33 @@ client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 try:
     client_socket.connect(ADDR)
-    sending_flag = True
+    is_sending = True
 except OSError as message:
     client_socket.close()
-    sending_flag = False
+    is_sending = False
+
 
 def send_data(message):
     formatted_message = message.encode(DATA_FORMAT)
     msg_len = len(formatted_message)
     message_header = str(msg_len).encode(DATA_FORMAT)
-    message_header += b' ' * (HEADER_SIZE - len(message_header))  
+    # fill in header to 64 bytes so server understands.
+    message_header += b' ' * (HEADER_SIZE - len(message_header))
 
-    #send header and message
+    # Send header and message
     client_socket.send(message_header)
     client_socket.send(formatted_message)
 
     recv_mes = client_socket.recv(DEF_BUFFER_SIZE).decode(DATA_FORMAT)
-    print(recv_mes)
+    print(f"Received message: {recv_mes}")
 
-while sending_flag:
-    print("you can now send a message")
-    print("to terminate the connection enter a blank message please")
-    message = input("Write your message please: ")
+
+while is_sending:
+    message = input("Type your message here: ")
     if message:
         send_data(message)
     else:
         send_data(DIS_MES)
-        sending_flag = False
+        is_sending = False
 
 client_socket.close()
