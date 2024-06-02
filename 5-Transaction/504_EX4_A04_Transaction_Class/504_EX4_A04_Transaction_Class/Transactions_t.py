@@ -11,7 +11,7 @@ def print_transaction(tx_name, tx):
     print(f'-- {tx_name}')
 
     for (index, input_item) in enumerate(tx.inputs):
-        payer = None
+        payer = Nonew
         for key_name, prv_key, pbc_key in keys_list:
             if pbc_key == input_item[0]:
                 payer = key_name
@@ -69,7 +69,7 @@ if __name__ == "__main__":
     Tx1.add_input(alex_pbc, 1)
     Tx1.add_output(mike_pbc, 1)
     Tx1.sign(alex_prv)
-    
+
     # --------------------------------------
     Tx2 = Tx()
     Tx2.add_input(alex_pbc, 2)

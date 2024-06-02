@@ -22,7 +22,7 @@ def handle_client(conn, addr):
                 connected_flag = False
             print(f"received data from {addr}: {data}")
             conn.send(RET_MES.encode(DATA_FORMAT))
-    
+ 
     conn.close()
 
 
