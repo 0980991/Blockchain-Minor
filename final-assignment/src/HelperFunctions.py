@@ -28,7 +28,7 @@ def optionsMenu(header, options, clear=False, prompt="> "):
             print(f"\nInvalid option. Please try again. (1 - {len(options)})")
 
 
-def yesNoInput(question='', default_yes=True, clear=False, initial_balance=0):
+def yesNoInput(question='', default_yes=True, clear=False):
     if clear:
         clear()
     if default_yes:
