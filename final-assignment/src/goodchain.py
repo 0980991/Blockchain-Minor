@@ -240,7 +240,7 @@ class GoodChainApp():
         back_flag = True
         while not valid_input:
             try:
-                username, amount, gas_fee = hf.readUserInput(["Enter the username of the receiver", f"Please enter the amount you would like to transfer. | Current balance: {self.user.balance}", f"Please enter the gas fee amount (Leftover balance: {self.user.balance}): "], prompt=self.prompt)
+                username, amount, gas_fee = hf.readUserInputTransaction(prompt=self.prompt, initial_balance=self.user.balance)
                 back_flag = False
                 send_amount = float(amount)
                 gas_fee = float(gas_fee)
@@ -252,17 +252,15 @@ class GoodChainApp():
                 hf.enterToContinue("ERROR [!]: The amount and gas fee must be a numerical value.")
 
 
-        receive_amount = send_amount - gas_fee
         check_send_amount = send_amount > 0
         check_gas_fee = gas_fee >= 0
-        check_both = gas_fee < send_amount
-        check_usr_balance = self.user.balance > send_amount
-        if send_amount > 0 and gas_fee >= 0 and gas_fee < send_amount and check_usr_balance:
+        check_usr_balance = self.user.balance > send_amount + gas_fee
+        if check_send_amount and check_gas_fee and check_usr_balance:
             if self.user.username != username and self.accounts.userExists(username):
 
-                sender_change = self.user.balance - send_amount
+                sender_change = self.user.balance - send_amount - gas_fee
                 tx = GCTx([(self.user.pem_public_key, self.user.balance, self.user.username)],
-                        [(self.accounts.publicKeyFromUsername(username), receive_amount, username), (self.user.pem_public_key,sender_change, self.user.username)],
+                        [(self.accounts.publicKeyFromUsername(username), send_amount, username), (self.user.pem_public_key,sender_change, self.user.username)],
                         gas_fee)
 
                 tx.sign(self.user.private_key)
@@ -290,8 +288,6 @@ class GoodChainApp():
                 msg += "\tThe send amount is greater than 0.0\n"
             if not check_gas_fee:
                 msg += "\tThe gas fee amount is greater than or equal to than 0 and less than the amount you want to send.\n"
-            if not check_both:
-                msg += "\tThe send amount is greater than the gas fee\n"
             if not check_usr_balance:
                 msg += f"\tThe send amount is greater than the your balance. You can only spend up to {self.user.balance}"
             hf.enterToContinue(f"ERROR [!]: Make sure that:\n{msg}.")
