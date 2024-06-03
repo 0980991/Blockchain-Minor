@@ -4,7 +4,7 @@ import types
 import pickle
 
 selector = selectors.DefaultSelector()
-numbers = []
+data = []
 
 def accept_wrapper(sock):
     conn, addr = sock.accept()
@@ -21,8 +21,8 @@ def service_connection(key, mask):
         recv_data = sock.recv(1024)
         if recv_data:
             message = pickle.loads(recv_data)
-            handle_request(message)
-            data.outb += pickle.dumps('Success')
+            response = handle_request(message)
+            data.outb += pickle.dumps(response)
         else:
             print(f'Closing connection to {data.addr}')
             selector.unregister(sock)
@@ -33,16 +33,25 @@ def service_connection(key, mask):
             data.outb = data.outb[sent:]
 
 def handle_request(message):
-    global numbers
+    global data
     try:
         request = message  # Using the unpickled data directly
-        if request['type'] == 'addNumber':
-            numbers.append(request['data'])
-        elif request['type'] == 'removeNumber':
-            numbers.remove(request['data'])
-        print(f'Current numbers: {numbers}')
+        if request['type'] == 'add':
+            data.append(request['data'])
+            print(f'Current data: {data}')
+            return 'Success'
+        elif request['type'] == 'remove':
+            data.remove(request['data'])
+            print(f'Current data: {data}')
+            return 'Success'
+        else:
+            print(f'type {request["type"]} is not recognized')
+            print(f'Current data: {data}')
+            return f'Failed: type {request["type"]} is not recognized'
+        
     except Exception as e:
         print(f'Error handling request: {e}')
+        return f'Failed: {str(e)}'
 
 def start_server(host='localhost', port=65432):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
