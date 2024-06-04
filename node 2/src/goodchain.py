@@ -10,6 +10,9 @@ from GCTx import GCTx
 from TxPool import TxPool
 from BlockChain import BlockChain
 import time
+import server
+import client
+import threading
 
 ## QUESTIONS:
 # 1. Does genesis block have to be mined? Does it need a hash of 000
@@ -21,11 +24,12 @@ class GoodChainApp():
         self.accounts = GCAccounts()
 
         self.tx_pool = TxPool()
-        self.tx_pool.load()
-        self.tx_pool.sort()
-
+        
         self.blockchain = BlockChain()
         self.blockchain.load()
+        
+        server_thread = threading.Thread(target=server.start_server, daemon=True)
+        server_thread.start()
 
         self.logged_in = False
         self.user = None
@@ -172,6 +176,7 @@ class GoodChainApp():
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             self.tx_pool.add(tx_reward)
             self.tx_pool.sort()
+            client.send_data("transaction_add", tx_reward)
 
             if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
@@ -275,6 +280,7 @@ class GoodChainApp():
                         # REMOVE spent outputs
                         self.user.balance -= send_amount
                         hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
+                        client.send_data("transaction_add", tx)
                         return
                     else:
                         return # User canceled operation
