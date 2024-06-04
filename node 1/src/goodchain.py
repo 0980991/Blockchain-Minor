@@ -387,7 +387,7 @@ class GoodChainApp():
                 if not new_pw == "":
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
-                    dbi.updatePwHash(self.user.username, new_pw)
+                    dbi.updatePwHash(self.user.username, hashed_pw)
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
