@@ -172,6 +172,10 @@ class GoodChainApp():
             new_user = GCUser(username, hashed_pw)
             self.accounts.users.append(new_user)
             dbi.insertUser(new_user)
+            sendable_user = new_user
+            sendable_user.private_key = None
+            sendable_user.public_key = None
+            client.send_data("user_add", sendable_user)
 
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             self.tx_pool.add(tx_reward)
@@ -303,7 +307,7 @@ class GoodChainApp():
             hf.enterToContinue(f"ERROR [!]: Make sure that:\n{msg}.")
 
     def viewTransactionPool(self):
-
+        self.tx_pool.load()
         print(self.tx_pool)
         hf.enterToContinue()
 
@@ -387,7 +391,12 @@ class GoodChainApp():
                 if not new_pw == "":
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
-                    dbi.updatePwHash(self.user.username, new_pw)
+                    dbi.updatePwHash(self.user.username, hashed_pw)
+                    client.send_data("user_changepw",  
+                    {
+                    "username": self.user.username,
+                    "password": hashed_pw
+                    })
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):

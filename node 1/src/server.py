@@ -20,7 +20,7 @@ def service_connection(key, mask):
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
-        recv_data = sock.recv(1024)
+        recv_data = sock.recv(4096)
         if recv_data:
             message = pickle.loads(recv_data)
             response = handle_request(message)

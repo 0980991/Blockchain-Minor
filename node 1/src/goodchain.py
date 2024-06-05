@@ -172,6 +172,10 @@ class GoodChainApp():
             new_user = GCUser(username, hashed_pw)
             self.accounts.users.append(new_user)
             dbi.insertUser(new_user)
+            sendable_user = new_user
+            sendable_user.private_key = None
+            sendable_user.public_key = None
+            client.send_data("user_add", sendable_user)
 
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             self.tx_pool.add(tx_reward)
@@ -180,7 +184,6 @@ class GoodChainApp():
 
             if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
-            client.send_data("user_add", new_user)
         else:
             hf.enterToContinue("This username has already been taken!")
 
