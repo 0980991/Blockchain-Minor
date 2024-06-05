@@ -3,6 +3,7 @@ import socket
 import types
 import pickle
 from TxPool import TxPool
+from DbInterface import DbInterface as dbi
 
 selector = selectors.DefaultSelector()
 data = []
@@ -52,6 +53,10 @@ def handle_request(message):
                 return 'Success'
             else:
                 return 'invalid transaction'
+        elif request['type'] == 'user_add':
+            dbi.insertUser(request['data'])
+        elif request['type'] == 'user_changepw':
+            dbi.updatePwHash(request['data']['username'], request['data']['password'])
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')

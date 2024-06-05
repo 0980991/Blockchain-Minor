@@ -180,6 +180,7 @@ class GoodChainApp():
 
             if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
+            client.send_data("user_add", new_user)
         else:
             hf.enterToContinue("This username has already been taken!")
 
@@ -388,6 +389,11 @@ class GoodChainApp():
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
                     dbi.updatePwHash(self.user.username, hashed_pw)
+                    client.send_data("user_changepw",  
+                    {
+                    "username": self.user.username,
+                    "password": hashed_pw
+                    })
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
