@@ -1,4 +1,6 @@
 import os
+from datetime import datetime as dt
+
 # from numpy import append
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -118,6 +120,7 @@ def readUserInputTransaction(clear=False, prompt="> ", initial_balance=0.0): # I
 
 
 def logEvent(log_message, log_file="hash_log.txt"):
+    log_message = dt.now().strftime('%d-%m-%Y %H:%M:%S') +  " " +  log_message
     with open(log_file, "a") as f:
         f.write(log_message)
         f.write("\n")

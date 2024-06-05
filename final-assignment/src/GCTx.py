@@ -5,6 +5,11 @@ import HelperFunctions as hf
 import random as r
 import GCAccounts
 
+## FOR DEBUG
+import inspect
+import os
+
+
 class GCTx:
     def __init__(self, inputs=None, outputs=None, gas_fee=0.0):
         self.time_stamp = dt.now()
@@ -78,7 +83,7 @@ class GCTx:
                 return True
         return False
 
-    def isValid(self):
+    def isValid(self, prev_block=None): # Prev_block is only used for verifying the mining reward sum of the previous block.
         total_in = 0
         total_out = 0
         tx_data = self.collectTxData()
@@ -87,8 +92,26 @@ class GCTx:
             found = False
             # 1. Verify Sender Signatures
             if addr == "REWARD":
-                found = True
+                if user == "Signup Reward" and amount == 50.0:
+                    #############################
+                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                    log_str += f" This TX is a {user}."
+                    hf.logEvent(log_str, "log_validation.txt")
+                    #############################
+                    found = True
+                elif user == "Mining Reward" and amount == prev_block.getRewardSum():
+                    #############################
+                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                    log_str += f" This TX is a {user}."
+                    hf.logEvent(log_str, "log_validation.txt")
+                    #############################
+                    found = True
             else:
+                #############################
+                log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                log_str += f" This TX is sent by {user}."
+                hf.logEvent(log_str, "log_validation.txt")
+                #############################
                 for sig in self.sigs:
                     if s.verify(tx_data, sig, s.deserializePublicKey(addr)):
                         found = True

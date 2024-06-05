@@ -110,6 +110,5 @@ class TxPool():
             return hf.prettyString("The transaction pool is currently empty.")
 
         for i, tx in enumerate(self.transactions):
-            if tx.isValid():
-                tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
+            tx_str += f"\n\n[{i+1}] " + str(tx) + "\n"
         return tx_str

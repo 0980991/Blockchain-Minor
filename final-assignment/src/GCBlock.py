@@ -4,7 +4,10 @@ from cryptography.hazmat.primitives import hashes
 from cryptography.hazmat.backends import default_backend
 import base64
 
+
 ## FOR DEBUG
+import inspect
+import os
 import time
 import HelperFunctions as hf
 
@@ -54,7 +57,7 @@ class GCBlock:
                 return True
 
     def getRewardSum(self):
-        reward_sum = 50
+        reward_sum = 50.0
         for tx in self.transactions:
             reward_sum += tx.gas_fee
         return reward_sum
@@ -66,9 +69,14 @@ class GCBlock:
         return bools
 
     def validate(self):
-
         for tx in self.transactions:
-            if not tx.isValid():
+            #############################
+            log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{tx.id}] validated."
+            if tx.inputs[0][0] == "REWARD":
+                log_str += f" This TX is a {tx.inputs[0][2]}."
+            hf.logEvent(log_str, "log_validation.txt")
+            #############################
+            if not tx.isValid(self.previous_block):
                 return False
         # 2. Check if previous
         if self.previous_block == None:
@@ -115,6 +123,17 @@ class GCBlock:
         string =  f"Block [{self.id}]\n{64*'='}\nMined on: {self.time_stamp} by {self.mined_by}"
         string += f"\n{64*'-'}\nData: {data_str}{64*'-'}\n"
         string += f"Nonce: {self.nonce}\n{64*'-'}\nPrevious Block Hash: {self.previous_hash}\n{64*'-'}\nCurrent Block Hash: {self.blockHash}\n"
+        string += f"{(64*'-')}\nValidation Flags: "
 
-        string += f"{(64*'-')}\nValidation Flags: {str(self.validation_flags[0][0])}, {str(self.validation_flags[1][0])}, {str(self.validation_flags[2][0])}\n{(64*'-')}\n"
+        # Adds the username of the person that verified the flag if the flag is not None
+        for i in range(3):
+            if self.validation_flags[i][0] is not None:
+                string += f"{str(self.validation_flags[i][0])} by {self.validation_flags[i][1]}"
+            else:
+                string += f"{str(self.validation_flags[i][0])}"
+            if i < 2:
+                string += ", "
+        string += f"\n{(64*'-')}\n"
+
+        # string += f"{(64*'-')}\nValidation Flags: {str(self.validation_flags[0][0])}, {str(self.validation_flags[1][0])}, {str(self.validation_flags[2][0])}\n{(64*'-')}\n"
         return string
