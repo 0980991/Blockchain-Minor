@@ -213,6 +213,7 @@ class GoodChainApp():
             self.options = [
                 [self.login, "Login"],
                 [self.explore, "Explore the Blockchain"],
+                [self.viewTransactionPool, "View Transaction Pool"],
                 [self.signUp, "Sign Up"],
                 [self.exit,"Exit"]
             ]
