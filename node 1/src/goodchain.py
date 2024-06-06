@@ -126,6 +126,7 @@ class GoodChainApp():
         hf.enterToContinue(str(self.blockchain))
 
     def login(self):
+        self.accounts.loadUsers()
         user_credentials = hf.readUserInput(["Enter your username:", "Enter your password:"], prompt=self.prompt)
         if user_credentials == []:
             return
