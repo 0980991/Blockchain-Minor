@@ -36,7 +36,7 @@ class BlockChain:
             block = block.previous_block
         # Subtract the inputs in currently in tx pool
         for tx in tx_pool.transactions:
-            if tx.inputs[0][2] == username and tx.isValid():
+            if tx.inputs[0][2] == username and tx.isValid(self.latest_block.previous_block):
                 total_balance -= tx.inputs[0][1] - tx.outputs[-1][1]
         return total_balance
 
@@ -68,7 +68,7 @@ class BlockChain:
         except FileNotFoundError:
             print("Block chain data file not located! A new blockchain will be created.")
             hf.enterToContinue("BlockChain.dat not found!\nIf the system is launched for the first time the file will be created automatically.\nIf the BlockChain.dat file already exists in the 'data' folder, make sure the 'goodchain.py' is launched from the root directory!")
-            
+
             self.latest_block = GCBlock([], None)
         except UnpicklingError:
             hf.enterToContinue("BlockChain.dat has been corrupted and can no longer be read.\nDelete the file and restart the program!")
@@ -97,7 +97,7 @@ class BlockChain:
         if time_since_last_block > timedelta(minutes=3):
             output_flags.append((True, ""))
         else:
-            output_flags.append((False, f"ERROR [!]: It has only been {time_since_last_block} since the previous block was mined! "))
+            output_flags.append((False, f"ERROR [!]: It has only been {time_since_last_block} since the previous block was mined! Please wait 3 minutes before mining the next block. "))
 
         bool_flags = []
         for flag in output_flags:
@@ -105,9 +105,6 @@ class BlockChain:
             if print_output:
                 print(flag[1])
         return all(bool_flags)
-
-
-
 
     def validate(self):
         return self.latest_block.validate()
