@@ -9,6 +9,8 @@ import sys
 class TxPool():
     def __init__(self):
         self.transactions = []
+        self.load()
+        self.sort()
 
     def add(self, tx):
         self.transactions.append(tx)
