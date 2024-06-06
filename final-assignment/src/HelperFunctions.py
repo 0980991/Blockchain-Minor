@@ -1,4 +1,6 @@
 import os
+from datetime import datetime as dt
+
 # from numpy import append
 def clear():
     os.system('cls' if os.name == 'nt' else 'clear')
@@ -31,7 +33,6 @@ def optionsMenu(header, options, clear=False, prompt="> "):
 def yesNoInput(question='', default_yes=True, clear=False):
     if clear:
         clear()
-
     if default_yes:
         suffix = ' (Y/n)'
         question += suffix + '\n'
@@ -92,7 +93,34 @@ def readUserInput3(message, clear=False, prompt="> "):
         else:
             print("ERROR [!]: Invalid input!\n")
 
+def readUserInputTransaction(clear=False, prompt="> ", initial_balance=0.0): # Initial_balance is only used by the transaction prompt in order to update the user balance throughout these prompts
+    questionList = ["Enter the username of the receiver", f"Please enter the amount you would like to transfer. | Current balance: {{balance}}", f"Please enter the gas fee amount (Leftover balance: {{balance}}): "]
+    if clear:
+        clear()
+    user_input = []
+    balance = initial_balance
+    for i, question in enumerate(questionList):
+
+        if i == 1:  # The index where the amount is entered
+            question = question.replace("{balance}", str(balance))
+        elif i == 2:  # The index where the gas fee is entered
+            question = question.replace("{balance}", str(balance))
+
+        user_input.append(input(question + "\n" + "(Press b to cancel)\n\n" + prompt).strip()) ## The char escape functie zou hier aangeroepen kunnen worden
+
+        while user_input[i] == '':
+            print('This field cannot be empty')
+            user_input.pop() # Removes the empty space added to list
+            user_input.append(input(question + "\n" + "(Press b to cancel)\n\n" + prompt)) ## The char escape functie zou hier aangeroepen kunnen worden
+        if user_input[i] == 'b':
+            return []
+        if i == 1:
+            balance -= float(user_input[i])
+    return user_input
+
+
 def logEvent(log_message, log_file="hash_log.txt"):
+    log_message = dt.now().strftime('%d-%m-%Y %H:%M:%S') +  " " +  log_message
     with open(log_file, "a") as f:
         f.write(log_message)
         f.write("\n")
