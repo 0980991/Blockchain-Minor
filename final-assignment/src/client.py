@@ -25,5 +25,3 @@ async def send_data(type, data):
         print(f"An error occurred: {e}")
         return False
 
-# Example usage:
-# asyncio.run(send_data('some_type', 'some_data'))
