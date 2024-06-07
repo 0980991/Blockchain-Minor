@@ -132,6 +132,7 @@ class GoodChainApp():
 
 
     def explore(self):
+        self.blockchain.load()
         hf.enterToContinue(str(self.blockchain))
 
     def login(self):
@@ -376,10 +377,11 @@ class GoodChainApp():
             new_block.mine(verbose)
             end_time = time.time() - start_time
 
-            self.blockchain.add(new_block)
+            self.blockchain.check_duplicate_and_add(new_block)
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
+            client.send_data("block_add", new_block)
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
             self.setMenuOptions()

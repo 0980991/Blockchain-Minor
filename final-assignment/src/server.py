@@ -3,6 +3,7 @@ import socket
 import types
 import pickle
 from TxPool import TxPool
+from BlockChain import BlockChain
 from DbInterface import DbInterface as dbi
 
 selector = selectors.DefaultSelector()
@@ -20,7 +21,7 @@ def service_connection(key, mask):
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
-        recv_data = sock.recv(4096)
+        recv_data = sock.recv(16384)
         if recv_data:
             message = pickle.loads(recv_data)
             response = handle_request(message)
@@ -39,10 +40,12 @@ def handle_request(message):
     try:
         request = message  # Using the unpickled data directly
         txpool = TxPool()
+        blockchain = BlockChain()
         if request['type'] == 'transaction_add':
             if request['data'].isValid():
                 txpool.add(request['data'])
                 txpool.sort()
+                txpool.save()
                 return 'Success'
             else:
                 return 'invalid transaction'
@@ -50,13 +53,28 @@ def handle_request(message):
             if request['data'].isValid():
                 txpool.remove(request['data'].id)
                 txpool.sort()
+                txpool.save()
                 return 'Success'
             else:
                 return 'invalid transaction'
         elif request['type'] == 'user_add':
             dbi.insertUser(request['data'])
+            return 'Success'
         elif request['type'] == 'user_changepw':
             dbi.updatePwHash(request['data']['username'], request['data']['password'])
+            return 'Success'
+        elif request['type'] == 'block_add':
+            blockchain.load()
+            if request['data'].validate():
+                blockchain.check_duplicate_and_add(request['data'])
+                for transactions in request['data'].transactions:
+                    txpool.remove(transactions.id)
+                txpool.sort()
+                txpool.save()
+                blockchain.save()
+                return 'Success'
+            else:
+                return 'Invalid_block'
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')
@@ -66,7 +84,7 @@ def handle_request(message):
         print(f'Error handling request: {e}')
         return f'Failed: {str(e)}'
 
-def start_server(host='localhost', port=65432):
+def start_server(host='localhost', port=5006):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lsock.bind((host, port))
     lsock.listen()
