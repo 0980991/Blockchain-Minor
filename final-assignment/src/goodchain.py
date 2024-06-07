@@ -14,6 +14,7 @@ import server
 import client
 import threading
 import datetime
+import asyncio
 
 ## FOR DEBUG
 import inspect
@@ -28,15 +29,15 @@ class GoodChainApp():
         
         self.blockchain = BlockChain()
         self.blockchain.load()
-        
-        server_thread = threading.Thread(target=server.start_server, daemon=True)
-        server_thread.start()
 
         self.logged_in = False
         self.user = None
         self.options = None
         self.notifications = []
         self.setMenuOptions()
+        
+        server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
+        server_thread.start()
 
 
     def start(self):
@@ -135,6 +136,9 @@ class GoodChainApp():
         self.blockchain.load()
         hf.enterToContinue(str(self.blockchain))
 
+    async def check_nodes(self, user):
+        return await (client.send_data("logged_in", user))
+
     def login(self):
         self.accounts.loadUsers()
         user_credentials = hf.readUserInput(["Enter your username:", "Enter your password:"], prompt=self.prompt)
@@ -148,6 +152,10 @@ class GoodChainApp():
                 pw_hash = self.accounts.hash_string(user_credentials[1])
 
                 user = self.accounts.validateAccount(username, pw_hash)
+                if user is not None:
+                    if asyncio.run(self.check_nodes(user.username)):
+                        hf.enterToContinue("\n[+] your are already logged in on another node!\n")
+                        return
                 if user is not None:
                     self.user = user
                     self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)

@@ -17,14 +17,14 @@ def accept_wrapper(sock):
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     selector.register(conn, events, data=data)
 
-def service_connection(key, mask):
+def service_connection(key, mask, user):
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(16384)
         if recv_data:
             message = pickle.loads(recv_data)
-            response = handle_request(message)
+            response = handle_request(message, user)
             data.outb += pickle.dumps(response)
         else:
             # print(f'Closing connection to {data.addr}')
@@ -35,7 +35,7 @@ def service_connection(key, mask):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
-def handle_request(message):
+def handle_request(message, user):
     global data
     try:
         request = message  # Using the unpickled data directly
@@ -75,6 +75,11 @@ def handle_request(message):
                 return 'Success'
             else:
                 return 'Invalid_block'
+        elif request['type'] == 'logged_in':
+            if user != None and user.username != None and user.username == request['data']:
+                return True
+            else:
+                return False
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')
@@ -84,7 +89,7 @@ def handle_request(message):
         print(f'Error handling request: {e}')
         return f'Failed: {str(e)}'
 
-def start_server(host='localhost', port=5006):
+def start_server(app_instance, host='localhost', port=5006):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lsock.bind((host, port))
     lsock.listen()
@@ -99,7 +104,8 @@ def start_server(host='localhost', port=5006):
                 if key.data is None:
                     accept_wrapper(key.fileobj)
                 else:
-                    service_connection(key, mask)
+                    user = app_instance.user
+                    service_connection(key, mask, user)
     except KeyboardInterrupt:
         print("Caught keyboard interrupt, exiting")
     finally:
