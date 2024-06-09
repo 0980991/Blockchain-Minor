@@ -3,16 +3,13 @@ from sqlite3 import DatabaseError
 import HelperFunctions as hf
 import sys
 import os
-
 class DbInterface:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    DATA_FILE_PATH = os.path.normpath(os.path.join(BASE_DIR, '..', 'data', 'Accounts.db'))
+
     def __init__(self):
         try:
-            # Check if the 'data' directory exists
-            if not os.path.exists("./data"):
-                os.makedirs("./data")
-
-            # Connect to the database
-            db = sqlite3.connect("./data/Accounts.db")
+            db = sqlite3.connect(DbInterface.DATA_FILE_PATH)
             cursor = db.cursor()
 
             # Create the Accounts table if it doesn't exist
@@ -39,32 +36,32 @@ class DbInterface:
             sys.exit()
 
     @classmethod
-    def updatePwHash(self, user_name, pw_hash):
-        db = sqlite3.connect("./data/Accounts.db")
+    def updatePwHash(cls, user_name, pw_hash):
+        db = sqlite3.connect(cls.DATA_FILE_PATH)
         cursor = db.cursor()
         cursor.execute(f'UPDATE Accounts SET password = "{pw_hash}" WHERE user_name = "{user_name}"')
         db.commit()
         db.close()
 
     @classmethod
-    def deleteUser(self, username):
-        db = sqlite3.connect("./data/Accounts.db")
+    def deleteUser(cls, username):
+        db = sqlite3.connect(cls.DATA_FILE_PATH)
         cursor = db.cursor()
         cursor.execute(f'DELETE FROM Accounts WHERE user_name="{username}"')
         db.commit()
         db.close()
 
     @classmethod
-    def insertUser(self, user):
-        db = sqlite3.connect("./data/Accounts.db")
+    def insertUser(cls, user):
+        db = sqlite3.connect(cls.DATA_FILE_PATH)
         cursor = db.cursor()
         cursor.execute(f'INSERT INTO Accounts (user_name, password, private_key, public_key) VALUES ("{user.username}", "{user.pw_hash}", "{user.pem_private_key}", "{user.pem_public_key}")')
         db.commit()
         db.close()
 
     @classmethod
-    def getAllUsers(self):
-        db = sqlite3.connect("./data/Accounts.db")
+    def getAllUsers(cls):
+        db = sqlite3.connect(cls.DATA_FILE_PATH)
         cursor = db.cursor()
         raw_users = cursor.execute(f'SELECT * FROM Accounts').fetchall()
         db.commit()
@@ -73,7 +70,7 @@ class DbInterface:
 
 
     @classmethod
-    def formatDbRow(self, rows, attributes):
+    def formatDbRow(cls, rows, attributes):
             outputstring = (20 * '=') + '\n'
             for row in rows:
                 for i, userattribute in enumerate(row):

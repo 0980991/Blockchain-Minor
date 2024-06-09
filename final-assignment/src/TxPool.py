@@ -4,10 +4,13 @@ from GCBlock import GCBlock
 import HelperFunctions as hf
 from datetime import datetime as dt, timedelta
 import sys
+import os
 
 
 class TxPool():
     def __init__(self):
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_path = os.path.normpath(os.path.join(self.base_dir, '..', 'data', 'TxPool.dat'))
         self.transactions = []
         self.load()
         self.sort()
@@ -47,9 +50,9 @@ class TxPool():
             print("ERROR [!]: Transaction not found. No transaction has been removed")
         self.transactions = new_tx_list
 
-    def load(self, data_file="data/TxPool.dat"):
+    def load(self):
         try:
-            fh = open(data_file, 'rb')
+            fh = open(self.data_path, 'rb')
             transactions = pickle.load(fh)
             fh.close()
             self.transactions = transactions
@@ -63,8 +66,8 @@ class TxPool():
             hf.enterToContinue("ERROR [!]: TxPool.dat has been corrupted and cannot be opened.\n Please delete the file and restart the program.")
             sys.exit()
 
-    def save(self, data_file="data/TxPool.dat"):
-        fh = open(data_file, 'wb')
+    def save(self):
+        fh = open(self.data_path, 'wb')
         pickle.dump(self.transactions, fh)
         fh.close()
 
