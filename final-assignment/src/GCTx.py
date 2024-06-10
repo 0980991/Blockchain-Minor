@@ -101,14 +101,14 @@ class GCTx:
                     found = True
                 elif user == "Mining Reward" and amount == prev_block.getRewardSum():
                     #############################
-                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                    log_str = f"{os.path.basename(inspect.stack()[2].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
                     log_str += f" This TX is a {user}."
                     hf.logEvent(log_str, "log_validation.txt")
                     #############################
                     found = True
             else:
                 #############################
-                log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                log_str = f"{os.path.basename(inspect.stack()[2].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
                 log_str += f" This TX is sent by {user}."
                 hf.logEvent(log_str, "log_validation.txt")
                 #############################

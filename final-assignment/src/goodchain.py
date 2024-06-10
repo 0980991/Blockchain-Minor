@@ -22,8 +22,11 @@ class GoodChainApp():
         self.accounts = GCAccounts()
 
         self.tx_pool = TxPool()
+<<<<<<< Updated upstream
         self.tx_pool.load()
         self.tx_pool.sort()
+=======
+>>>>>>> Stashed changes
 
         self.blockchain = BlockChain()
         self.blockchain.load()
@@ -33,6 +36,12 @@ class GoodChainApp():
         self.options = None
         self.notifications = []
         self.setMenuOptions()
+<<<<<<< Updated upstream
+=======
+
+        server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
+        server_thread.start()
+>>>>>>> Stashed changes
 
 
     def start(self):
@@ -89,13 +98,6 @@ class GoodChainApp():
                         if i == 2 and self.latest_block.previous_block is not None:
                             for tx in self.blockchain.latest_block.transactions:
                                 # Add all valid transactions from the deleted block back to the TX pool if they are valid.
-                                if tx.isValid(self.blockchain.latest_block):
-                                    #############################
-                                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{tx.id}] validated."
-                                    if tx.inputs[0][0] == "REWARD":
-                                        log_str += f" This TX is a {tx.inputs[0][2]}."
-                                    hf.logEvent(log_str, "log_validation.txt")
-                                    #############################
                                     self.tx_pool.append(tx)
                                 else:
                                     #Return funds (Refunds for other users are calculate when they login)
@@ -385,7 +387,16 @@ class GoodChainApp():
                 if not new_pw == "":
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
+<<<<<<< Updated upstream
                     dbi.updatePwHash(self.user.username, new_pw)
+=======
+                    dbi.updatePwHash(self.user.username, hashed_pw)
+                    client.send_data("user_changepw",
+                    {
+                    "username": self.user.username,
+                    "password": hashed_pw
+                    })
+>>>>>>> Stashed changes
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
