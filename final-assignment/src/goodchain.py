@@ -26,15 +26,10 @@ class GoodChainApp():
         self.accounts = GCAccounts()
 
         self.tx_pool = TxPool()
-        # self.tx_pool.load()
-        # self.tx_pool.sort()
 
 
         self.blockchain = BlockChain()
         self.blockchain.load()
-        
-        # server_thread = threading.Thread(target=server.start_server, daemon=True)
-        # server_thread.start()
 
         self.logged_in = False
         self.user = None
@@ -42,8 +37,8 @@ class GoodChainApp():
         self.notifications = []
         self.setMenuOptions()
 
-        # server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
-        # server_thread.start()
+        server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
+        server_thread.start()
 
 
     def start(self):
