@@ -417,8 +417,11 @@ class GoodChainApp():
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
+        script_dir = os.path.dirname(os.path.abspath(__file__))
+        banners_file_path = os.path.normpath(os.path.join(script_dir, '..', 'banners.txt'))
+
         banners = []
-        with open("banners.txt", 'r', encoding='utf-16le') as file:
+        with open(banners_file_path, 'r', encoding='utf-16le') as file:
             banners_text = file.read()
             banners = banners_text.split('\n,\n')
         return r.choice(banners)

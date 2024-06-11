@@ -4,10 +4,12 @@ import pickle
 from pickle import UnpicklingError
 import HelperFunctions as hf
 import sys
-
+import os
 class BlockChain:
 
     def __init__(self):
+        self.base_dir = os.path.dirname(os.path.abspath(__file__))
+        self.data_path = os.path.normpath(os.path.join(self.base_dir, '..', 'data', 'Blockchain.dat'))
         self.latest_block = None
 
     def add(self, block):
@@ -84,23 +86,22 @@ class BlockChain:
 
         return user_transactions
 
-    def load(self, data_file="data/BlockChain.dat"):
+    def load(self):
         try:
-            fh = open(data_file, 'rb')
+            fh = open(self.data_path, 'rb')
             latest_block = pickle.load(fh)
             fh.close()
             self.latest_block = latest_block
         except FileNotFoundError:
-            print("Block chain data file not located! A new blockchain will be created.")
-            hf.enterToContinue("BlockChain.dat not found!\nIf the system is launched for the first time the file will be created automatically.\nIf the BlockChain.dat file already exists in the 'data' folder, make sure the 'goodchain.py' is launched from the root directory!")
+            hf.enterToContinue(f"Block chain data file not located in {self.data_path}! A new blockchain file will be created.")
 
             self.latest_block = GCBlock([], None)
         except UnpicklingError:
             hf.enterToContinue("BlockChain.dat has been corrupted and can no longer be read.\nDelete the file and restart the program!")
             sys.exit()
 
-    def save(self, data_file="data/BlockChain.dat"):
-        fh = open(data_file, 'wb')
+    def save(self):
+        fh = open(self.data_path, 'wb')
         pickle.dump(self.latest_block, fh)
         fh.close()
 
