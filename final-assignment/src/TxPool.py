@@ -12,6 +12,8 @@ class TxPool():
         self.base_dir = os.path.dirname(os.path.abspath(__file__))
         self.data_path = os.path.normpath(os.path.join(self.base_dir, '..', 'data', 'TxPool.dat'))
         self.transactions = []
+        self.load()
+        self.sort()
 
     def add(self, tx):
         self.transactions.append(tx)
