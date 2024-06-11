@@ -373,6 +373,9 @@ class GoodChainApp():
             hf.enterToContinue(hf.prettyString(f"Transaction [{tx_id}]: Canceled Sucesfully!"))
             return
 
+    async def mine(self, new_block):
+            return await (client.send_data("block_add", new_block))
+    
     def mineBlock(self):
         mining_allowed = self.blockchain.miningAllowed(self.tx_pool)
         if mining_allowed:
@@ -389,7 +392,8 @@ class GoodChainApp():
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
-            client.send_data("block_add", new_block)
+            
+            asyncio.run(self.mine(new_block))
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
             self.setMenuOptions()
