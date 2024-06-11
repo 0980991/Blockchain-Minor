@@ -10,7 +10,9 @@ class ClientRequest:
     def to_bytes(self):
         return pickle.dumps({'type': self.type, 'data': self.data})
 
+
 async def send_data(type, data):
+
     host, port = 'localhost', 5005
     request = ClientRequest(type=type, data=data)
     try:

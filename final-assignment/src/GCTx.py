@@ -94,21 +94,24 @@ class GCTx:
             if addr == "REWARD":
                 if user == "Signup Reward" and amount == 50.0:
                     #############################
-                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                    log_str = f"{os.path.basename(inspect.stack()[2].filename)}: line {inspect.stack()[2].lineno} | Reward Tx [{self.id}] validated."
                     log_str += f" This TX is a {user}."
                     hf.logEvent(log_str, "log_validation.txt")
                     #############################
                     found = True
-                elif user == "Mining Reward" and amount == prev_block.getRewardSum():
+                elif user == "Mining Reward" and prev_block is not None and amount == prev_block.getRewardSum():
                     #############################
-                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                    log_str = f"{os.path.basename(inspect.stack()[2].filename)}: line {inspect.stack()[2].lineno} | Reward Tx [{self.id}] validated."
                     log_str += f" This TX is a {user}."
                     hf.logEvent(log_str, "log_validation.txt")
                     #############################
                     found = True
+                else:
+                    hf.enterToContinue(f"ERROR [!] Reward transaction [{self.id}] invalidated")
+                    return False
             else:
                 #############################
-                log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{self.id}] validated."
+                log_str = f"{os.path.basename(inspect.stack()[2].filename)}: line {inspect.stack()[2].lineno} | [{self.id}] validated."
                 log_str += f" This TX is sent by {user}."
                 hf.logEvent(log_str, "log_validation.txt")
                 #############################
@@ -117,7 +120,7 @@ class GCTx:
                         found = True
             if not found:
                 self.is_valid = False
-                hf.enterToContinue("ERROR: The transaction was not signed (correctly) and is not a REWARD transaction.")
+                hf.enterToContinue(f"ERROR: The transaction [{self.id}] not signed (correctly) and is not a REWARD transaction.")
                 return False
 
             # 2. Verify input amount

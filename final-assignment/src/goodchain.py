@@ -26,7 +26,8 @@ class GoodChainApp():
         self.accounts = GCAccounts()
 
         self.tx_pool = TxPool()
-        
+
+
         self.blockchain = BlockChain()
         self.blockchain.load()
 
@@ -35,7 +36,7 @@ class GoodChainApp():
         self.options = None
         self.notifications = []
         self.setMenuOptions()
-        
+
         server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
         server_thread.start()
 
@@ -43,6 +44,8 @@ class GoodChainApp():
     def start(self):
         while True:
             print(self.getBanner())
+            if self.logged_in:
+                    self.defaultNodeActions()
             if self.blockchain.latest_block.getValidationBools().count(True) < 3:
                 self.notifications.append(f"The most recently mined block {self.blockchain.latest_block.id} is still pending for verification. Flags: {self.blockchain.latest_block.getValidationBools().count(True)}/3")
             else:
@@ -60,6 +63,10 @@ class GoodChainApp():
             self.options[choice][0]()
 
     def defaultNodeActions(self):
+        # 1. Validate latest mined block
+        # 2. Delete block if marked invalid
+        # 3. Purge invalid tx in pool (validates chain)
+        
         # Perform default node actions:
         # 1. Validate newly mined block if necessary and if not mined by user and user hasnt already validated the block
         if not self.blockchain.latest_block.getValidationBools().count(True) > 2 and self.blockchain.latest_block.mined_by != self.user.username and not self.blockchain.latest_block.userHasAlreadyValidated(self.user.username):
@@ -77,15 +84,17 @@ class GoodChainApp():
                             receiver_pem_public_key = self.accounts.publicKeyFromUsername(receiver_username)
                             reward_sum = self.blockchain.latest_block.getRewardSum()
                             tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(receiver_pem_public_key, reward_sum, receiver_username)])
-                            self.tx_pool.add(tx_reward)
-                            self.tx_pool.sort()
-                            self.tx_pool.save()
+                            # Verify tx before adding to pool.
+                            if tx_reward.isValid(self.blockchain.latest_block):
+                                self.tx_pool.add(tx_reward)
+                                self.tx_pool.sort()
+                                self.tx_pool.save()
 
-                            # Update the current user balance in case to reflect the transactions in the newly accepted block
-                            self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
+                                # Update the current user balance in case to reflect the transactions in the newly accepted block
+                                self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
 
-                            notification_msg = f"You have created a reward transaction for {self.blockchain.latest_block.mined_by} for mining Block [{self.blockchain.latest_block.id}]"
-                            self.notifications.append(notification_msg)
+                                notification_msg = f"You have created a reward transaction for {self.blockchain.latest_block.mined_by} for mining Block [{self.blockchain.latest_block.id}]"
+                                self.notifications.append(notification_msg)
                     else:
                         self.blockchain.latest_block.validation_flags[i] = [False, self.user.username]
                         notification_msg = f"You have invalidated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
@@ -95,12 +104,6 @@ class GoodChainApp():
                             for tx in self.blockchain.latest_block.transactions:
                                 # Add all valid transactions from the deleted block back to the TX pool if they are valid.
                                 if tx.isValid(self.blockchain.latest_block):
-                                    #############################
-                                    log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{tx.id}] validated."
-                                    if tx.inputs[0][0] == "REWARD":
-                                        log_str += f" This TX is a {tx.inputs[0][2]}."
-                                    hf.logEvent(log_str, "log_validation.txt")
-                                    #############################
                                     self.tx_pool.append(tx)
                                 else:
                                     #Return funds (Refunds for other users are calculate when they login)
@@ -117,7 +120,8 @@ class GoodChainApp():
 
 
         # 3. Remove any INVALiD transactions in pool (Detects tampering since a tx can only be added to the pool if it is valid)
-        removed_tx_ids, user_return_sum = self.tx_pool.purgeInvalidUserTx(self.user.pem_public_key)
+        removed_tx_ids, user_return_sum = self.tx_pool.purgeInvalidUserTx(self.user.pem_public_key, self.blockchain.latest_block)
+
         if removed_tx_ids != []:
             notification_msg = f"Your transactions: {''.join([tx_id + ', ' if index < len(removed_tx_ids) - 1 else tx_id for index, tx_id in enumerate(removed_tx_ids)])} are invalid and have been deleted from the transaction pool."
             self.notifications.append(notification_msg)
@@ -162,7 +166,6 @@ class GoodChainApp():
                     self.prompt = f"({user.username})> "
                     self.logged_in = True
                     self.setMenuOptions()
-                    self.defaultNodeActions()
                     hf.enterToContinue("\n[+] Login Sucessful!\n")
                     return
                 else:
@@ -194,17 +197,20 @@ class GoodChainApp():
             sendable_user = new_user
             sendable_user.private_key = None
             sendable_user.public_key = None
-            client.send_data("user_add", sendable_user)
+            # client.send_data("user_add", sendable_user)
 
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
-            self.tx_pool.add(tx_reward)
-            self.tx_pool.sort()
-            client.send_data("transaction_add", tx_reward)
+            if tx_reward.isValid():
+                self.tx_pool.add(tx_reward)
+                self.tx_pool.sort()
+                # client.send_data("transaction_add", tx_reward)
 
-            if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
-                self.login()
+                if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
+                    self.login()
+            else:
+                hf.enterToContinue(f"ERROR: The reward transaction for new user '{new_user.username}' has been invalidated. Possibly due to tampering.")
         else:
-            hf.enterToContinue("This username has already been taken!")
+            hf.enterToContinue("ERROR: This username has already been taken!")
 
     # def showUsersDebug(self):
     #     users_str = ""
@@ -294,7 +300,7 @@ class GoodChainApp():
 
                 tx.sign(self.user.private_key)
 
-                if tx.isValid(self.blockchain.latest_block): # param not required
+                if tx.isValid():
                     if hf.yesNoInput(f"==={tx}\nAre you sure you want to create a transaction with the following details?"):
                         self.tx_pool.add(tx)
                         self.tx_pool.sort()
@@ -302,7 +308,7 @@ class GoodChainApp():
                         # REMOVE spent outputs
                         self.user.balance -= send_amount + gas_fee
                         hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
-                        client.send_data("transaction_add", tx)
+                        # client.send_data("transaction_add", tx)
                         return
                     else:
                         return # User canceled operation
@@ -409,11 +415,12 @@ class GoodChainApp():
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
                     dbi.updatePwHash(self.user.username, hashed_pw)
-                    client.send_data("user_changepw",  
+                    client.send_data("user_changepw",
                     {
                     "username": self.user.username,
                     "password": hashed_pw
                     })
+
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
