@@ -70,12 +70,6 @@ class GCBlock:
 
     def validate(self):
         for tx in self.transactions:
-            #############################
-            log_str = f"{os.path.basename(inspect.stack()[1].filename)}: line {inspect.stack()[1].lineno} | Tx [{tx.id}] validated."
-            if tx.inputs[0][0] == "REWARD":
-                log_str += f" This TX is a {tx.inputs[0][2]}."
-            hf.logEvent(log_str, "log_validation.txt")
-            #############################
             if not tx.isValid(self.previous_block):
                 return False
         # 2. Check if previous
