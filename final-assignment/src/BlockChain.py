@@ -14,6 +14,31 @@ class BlockChain:
 
     def add(self, block):
         self.latest_block = block
+        
+    def check_duplicate_and_add(self, block):
+        # Traverse the chain to find a block with the same ID
+        current_block = self.latest_block
+        while current_block is not None:
+            if current_block.id == block.id:
+                if current_block.time_stamp > block.time_stamp:
+                    # Replace the current block with the new block
+                    self.replace_block(current_block, block)
+                    print("duplicate block detected and replaced!!")
+                return
+            current_block = current_block.previous_block
+        
+        # If no block with the same ID is found, add the new block
+        block.previous_block = self.latest_block
+        self.add(block)
+
+    def replace_block(self, old_block, new_block):
+        if old_block.previous_block is not None:
+            new_block.previous_block = old_block.previous_block
+        else:
+            new_block.previous_block = None
+        if self.latest_block == old_block:
+            self.latest_block = new_block
+
 
     def calculateBalance(self, username, tx_pool):
         block = self.latest_block

@@ -11,16 +11,28 @@ class DbInterface:
         try:
             db = sqlite3.connect(DbInterface.DATA_FILE_PATH)
             cursor = db.cursor()
-            cursor.execute('''CREATE TABLE IF NOT EXISTS Accounts(
-            user_name TEXT NOT NULL,
-            password HASH NOT NULL,
-            private_key HASH NOT NULL,
-            public_key HASH NOT NULL
+
+            # Create the Accounts table if it doesn't exist
+            cursor.execute('''
+            CREATE TABLE IF NOT EXISTS Accounts(
+                user_name TEXT NOT NULL,
+                password TEXT NOT NULL,
+                private_key TEXT NOT NULL,
+                public_key TEXT NOT NULL
             );''')
+
             db.commit()
             db.close()
-        except DatabaseError:
-            hf.enterToContinue("ERROR [!]: Accounts.db been corrupted due to tampering and cannot be opened.\nPlease delete the file and restart the program.\nIf the file has not been tampered with and does not exist, make sure there is a 'data' folder in your root directory.")
+        except sqlite3.DatabaseError as e:
+            print("DatabaseError: ", e)
+            input("ERROR [!]: Accounts.db has been corrupted due to tampering and cannot be opened.\n"
+                  "Please delete the file and restart the program.\n"
+                  "If the file has not been tampered with and does not exist, make sure there is a 'data' folder in your root directory.\n"
+                  "Please press enter to continue...")
+            sys.exit()
+        except Exception as e:
+            print("An unexpected error occurred: ", e)
+            input("Please press enter to continue...")
             sys.exit()
 
     @classmethod

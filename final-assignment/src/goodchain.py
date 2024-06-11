@@ -10,7 +10,11 @@ from GCTx import GCTx
 from TxPool import TxPool
 from BlockChain import BlockChain
 import time
+import server
+import client
+import threading
 import datetime
+import asyncio
 
 ## FOR DEBUG
 import inspect
@@ -22,11 +26,6 @@ class GoodChainApp():
         self.accounts = GCAccounts()
 
         self.tx_pool = TxPool()
-<<<<<<< Updated upstream
-        self.tx_pool.load()
-        self.tx_pool.sort()
-=======
->>>>>>> Stashed changes
 
         self.blockchain = BlockChain()
         self.blockchain.load()
@@ -36,12 +35,9 @@ class GoodChainApp():
         self.options = None
         self.notifications = []
         self.setMenuOptions()
-<<<<<<< Updated upstream
-=======
 
         server_thread = threading.Thread(target=server.start_server, daemon=True, args=(self,))
         server_thread.start()
->>>>>>> Stashed changes
 
 
     def start(self):
@@ -130,9 +126,14 @@ class GoodChainApp():
 
 
     def explore(self):
+        self.blockchain.load()
         hf.enterToContinue(str(self.blockchain))
 
+    async def check_nodes(self, user):
+        return await (client.send_data("logged_in", user))
+
     def login(self):
+        self.accounts.loadUsers()
         user_credentials = hf.readUserInput(["Enter your username:", "Enter your password:"], prompt=self.prompt)
         if user_credentials == []:
             return
@@ -144,6 +145,10 @@ class GoodChainApp():
                 pw_hash = self.accounts.hash_string(user_credentials[1])
 
                 user = self.accounts.validateAccount(username, pw_hash)
+                if user is not None:
+                    if asyncio.run(self.check_nodes(user.username)):
+                        hf.enterToContinue("\n[+] your are already logged in on another node!\n")
+                        return
                 if user is not None:
                     self.user = user
                     self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
@@ -179,10 +184,15 @@ class GoodChainApp():
             new_user = GCUser(username, hashed_pw)
             self.accounts.users.append(new_user)
             dbi.insertUser(new_user)
+            sendable_user = new_user
+            sendable_user.private_key = None
+            sendable_user.public_key = None
+            client.send_data("user_add", sendable_user)
 
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             self.tx_pool.add(tx_reward)
             self.tx_pool.sort()
+            client.send_data("transaction_add", tx_reward)
 
             if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                 self.login()
@@ -214,6 +224,7 @@ class GoodChainApp():
             self.options = [
                 [self.login, "Login"],
                 [self.explore, "Explore the Blockchain"],
+                [self.viewTransactionPool, "View Transaction Pool"],
                 [self.signUp, "Sign Up"],
                 [self.exit,"Exit"]
             ]
@@ -284,6 +295,7 @@ class GoodChainApp():
                         # REMOVE spent outputs
                         self.user.balance -= send_amount + gas_fee
                         hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
+                        client.send_data("transaction_add", tx)
                         return
                     else:
                         return # User canceled operation
@@ -304,6 +316,7 @@ class GoodChainApp():
             hf.enterToContinue(f"ERROR [!]: Make sure that:\n{msg}.")
 
     def viewTransactionPool(self):
+        self.tx_pool.load()
         print(self.tx_pool)
         hf.enterToContinue()
 
@@ -365,10 +378,11 @@ class GoodChainApp():
             new_block.mine(verbose)
             end_time = time.time() - start_time
 
-            self.blockchain.add(new_block)
+            self.blockchain.check_duplicate_and_add(new_block)
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
+            client.send_data("block_add", new_block)
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
             self.setMenuOptions()
@@ -387,16 +401,13 @@ class GoodChainApp():
                 if not new_pw == "":
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
-<<<<<<< Updated upstream
-                    dbi.updatePwHash(self.user.username, new_pw)
-=======
                     dbi.updatePwHash(self.user.username, hashed_pw)
                     client.send_data("user_changepw",
                     {
                     "username": self.user.username,
                     "password": hashed_pw
                     })
->>>>>>> Stashed changes
+
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
     def getBanner(self):
