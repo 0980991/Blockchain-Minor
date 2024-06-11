@@ -14,6 +14,7 @@ import server
 import client
 import threading
 import datetime
+import asyncio
 
 ## FOR DEBUG
 import inspect
@@ -141,7 +142,11 @@ class GoodChainApp():
 
 
     def explore(self):
+        self.blockchain.load()
         hf.enterToContinue(str(self.blockchain))
+
+    async def check_nodes(self, user):
+        return await (client.send_data("logged_in", user))
 
     def login(self):
         self.accounts.loadUsers()
@@ -156,6 +161,10 @@ class GoodChainApp():
                 pw_hash = self.accounts.hash_string(user_credentials[1])
 
                 user = self.accounts.validateAccount(username, pw_hash)
+                if user is not None:
+                    if asyncio.run(self.check_nodes(user.username)):
+                        hf.enterToContinue("\n[+] your are already logged in on another node!\n")
+                        return
                 if user is not None:
                     self.user = user
                     self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
@@ -386,11 +395,12 @@ class GoodChainApp():
             start_time = time.time()
             new_block.mine(verbose)
             end_time = time.time() - start_time
-            
-            self.blockchain.add(new_block)
+
+            self.blockchain.check_duplicate_and_add(new_block)
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
+            client.send_data("block_add", new_block)
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
             self.setMenuOptions()
@@ -409,14 +419,12 @@ class GoodChainApp():
                 if not new_pw == "":
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
-
                     dbi.updatePwHash(self.user.username, hashed_pw)
-
-                    # client.send_data("user_changepw",
-                    # {
-                    # "username": self.user.username,
-                    # "password": hashed_pw
-                    # })
+                    client.send_data("user_changepw",
+                    {
+                    "username": self.user.username,
+                    "password": hashed_pw
+                    })
 
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 
