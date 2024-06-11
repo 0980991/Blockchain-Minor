@@ -29,26 +29,27 @@ class TxPool():
                 user_transactions.append(tx)
         return user_transactions
 
-    def purgeInvalidUserTx(self, pem_public_key):
+    def purgeInvalidUserTx(self, pem_public_key, latest_block=None): #latest_block is for purging invalid Mining Rewards
         user_return_sum = 0
         tx_ids_to_remove = []
         for tx in self.transactions:
             if tx.inputs[0][0]==pem_public_key and not tx.isValid():
                 user_return_sum += tx.inputs[0][1] - tx.outputs[-1][1]
                 tx_ids_to_remove.append(tx.id)
-
-
-
+            if tx.inputs[0][0]=="REWARD" and not tx.isValid(latest_block):
+                tx_ids_to_remove.append(tx.id)
         for tx_id in tx_ids_to_remove:
             self.remove(tx_id)
-
+        self.save()
         return (tx_ids_to_remove, user_return_sum)
 
     def remove(self, tx_id):
         new_tx_list = [tx for tx in self.transactions if tx.id != tx_id]
         if self.transactions == new_tx_list:
             print("ERROR [!]: Transaction not found. No transaction has been removed")
+        self.transactions = None
         self.transactions = new_tx_list
+        pass
 
     def load(self):
         try:
@@ -60,8 +61,7 @@ class TxPool():
             # TODO: Add to notification section
 
             hf.enterToContinue("TxPool.dat not found!\nIf the system is launched for the first time the file will be created automatically.\nIf the TxPool.dat file already exists in the 'data' folder, make sure the 'goodchain.py' is launched from the root directory!")
-            # if hf.yesNoInput("Error! TxPool.dat could not be located. Make sure it is stored in the same directory as the goodchain.py file\nWould you like to create a new emtpy file?"):
-            #     self.save()
+            self.save()
         except UnpicklingError:
             hf.enterToContinue("ERROR [!]: TxPool.dat has been corrupted and cannot be opened.\n Please delete the file and restart the program.")
             sys.exit()

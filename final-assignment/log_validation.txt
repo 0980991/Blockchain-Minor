@@ -1,60 +1,85 @@
-05-06-2024 09:12:15 BlockChain.py: line 110 | Tx [20240604161716149122] validated. This TX is a Mining Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604161716149122] validated. This TX is a Mining Reward.
-05-06-2024 09:12:15 BlockChain.py: line 110 | Tx [20240604170222444493] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604170222444493] validated. This TX is sent by e.
-05-06-2024 09:12:15 BlockChain.py: line 110 | Tx [20240604170300733273] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604170300733273] validated. This TX is sent by r.
-05-06-2024 09:12:15 BlockChain.py: line 110 | Tx [20240604170252874745] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604170252874745] validated. This TX is sent by r.
-05-06-2024 09:12:15 BlockChain.py: line 110 | Tx [20240604164046306106] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604164046306106] validated. This TX is sent by q.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604160342300150] validated. This TX is a Mining Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604160342300150] validated. This TX is a Mining Reward.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604160846308660] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604160846308660] validated. This TX is sent by e.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604160929555736] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604160929555736] validated. This TX is sent by e.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604160941870427] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604160941870427] validated. This TX is sent by e.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604161459519204] validated.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604161459519204] validated. This TX is sent by e.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604155356992682] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604155356992682] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604155407077269] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604155407077269] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604155419271423] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604155419271423] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604155447303550] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604155447303550] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 89 | Tx [20240604155458140673] validated. This TX is a Signup Reward.
-05-06-2024 09:12:15 GCBlock.py: line 79 | Tx [20240604155458140673] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 BlockChain.py: line 110 | Tx [20240604161716149122] validated. This TX is a Mining Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604161716149122] validated. This TX is a Mining Reward.
-05-06-2024 09:13:18 BlockChain.py: line 110 | Tx [20240604170222444493] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604170222444493] validated. This TX is sent by e.
-05-06-2024 09:13:18 BlockChain.py: line 110 | Tx [20240604170300733273] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604170300733273] validated. This TX is sent by r.
-05-06-2024 09:13:18 BlockChain.py: line 110 | Tx [20240604170252874745] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604170252874745] validated. This TX is sent by r.
-05-06-2024 09:13:18 BlockChain.py: line 110 | Tx [20240604164046306106] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604164046306106] validated. This TX is sent by q.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604160342300150] validated. This TX is a Mining Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604160342300150] validated. This TX is a Mining Reward.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604160846308660] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604160846308660] validated. This TX is sent by e.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604160929555736] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604160929555736] validated. This TX is sent by e.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604160941870427] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604160941870427] validated. This TX is sent by e.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604161459519204] validated.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604161459519204] validated. This TX is sent by e.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604155356992682] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604155356992682] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604155407077269] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604155407077269] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604155419271423] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604155419271423] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604155447303550] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604155447303550] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 89 | Tx [20240604155458140673] validated. This TX is a Signup Reward.
-05-06-2024 09:13:18 GCBlock.py: line 79 | Tx [20240604155458140673] validated. This TX is a Signup Reward.
+11-06-2024 10:55:36 goodchain.py: line 127 | Tx [20240611102201187553] validated. This TX is a Mining Reward.
+11-06-2024 10:55:50 goodchain.py: line 127 | Tx [20240611102201187553] validated. This TX is a Mining Reward.
+11-06-2024 10:56:04 goodchain.py: line 127 | Tx [20240611102201187553] validated. This TX is a Mining Reward.
+11-06-2024 10:56:20 goodchain.py: line 127 | Tx [20240611102201187553] validated. This TX is a Mining Reward.
+11-06-2024 11:19:51 goodchain.py: line 67 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:20:00 goodchain.py: line 67 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:20:05 goodchain.py: line 67 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:20:08 goodchain.py: line 67 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:20:15 goodchain.py: line 67 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:20:17 goodchain.py: line 127 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:20:17 goodchain.py: line 127 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:20:17 goodchain.py: line 127 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:20:17 goodchain.py: line 127 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:20:17 goodchain.py: line 127 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:21:00 BlockChain.py: line 111 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:21:00 BlockChain.py: line 111 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:00 BlockChain.py: line 111 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:21:00 BlockChain.py: line 111 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:00 BlockChain.py: line 111 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:21:04 BlockChain.py: line 111 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:21:04 BlockChain.py: line 111 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:04 BlockChain.py: line 111 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:21:04 BlockChain.py: line 111 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:04 BlockChain.py: line 111 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 BlockChain.py: line 111 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 BlockChain.py: line 111 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 BlockChain.py: line 111 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 BlockChain.py: line 111 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 BlockChain.py: line 111 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:21:09 goodchain.py: line 52 | Reward Tx [20240611112109182149] validated. This TX is a Mining Reward.
+11-06-2024 11:25:17 goodchain.py: line 67 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:25:19 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:25:36 goodchain.py: line 67 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:25:41 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:25:42 goodchain.py: line 127 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:25:48 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:25:52 goodchain.py: line 127 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:26:01 goodchain.py: line 67 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:26:05 goodchain.py: line 127 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:26:06 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:26:06 goodchain.py: line 127 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:26:16 goodchain.py: line 67 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:26:20 goodchain.py: line 127 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:26:21 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:26:21 goodchain.py: line 127 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:26:21 goodchain.py: line 127 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:26:42 goodchain.py: line 67 | [20240611112639483363] validated. This TX is sent by z.
+11-06-2024 11:27:11 goodchain.py: line 127 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:27:13 goodchain.py: line 127 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:27:13 goodchain.py: line 127 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:27:14 goodchain.py: line 127 | [20240611112639483363] validated. This TX is sent by z.
+11-06-2024 11:27:14 goodchain.py: line 127 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:28:03 BlockChain.py: line 111 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:28:03 BlockChain.py: line 111 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:28:03 BlockChain.py: line 111 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:28:03 BlockChain.py: line 111 | [20240611112639483363] validated. This TX is sent by z.
+11-06-2024 11:28:03 BlockChain.py: line 111 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:28:03 GCBlock.py: line 83 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:28:03 GCBlock.py: line 83 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:03 GCBlock.py: line 83 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:28:03 GCBlock.py: line 83 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:03 GCBlock.py: line 83 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:28:12 BlockChain.py: line 111 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:28:12 BlockChain.py: line 111 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:28:12 BlockChain.py: line 111 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:28:12 BlockChain.py: line 111 | [20240611112639483363] validated. This TX is sent by z.
+11-06-2024 11:28:12 BlockChain.py: line 111 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:28:12 GCBlock.py: line 83 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:28:12 GCBlock.py: line 83 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:12 GCBlock.py: line 83 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:28:12 GCBlock.py: line 83 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:12 GCBlock.py: line 83 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 BlockChain.py: line 111 | [20240611112558218072] validated. This TX is sent by z.
+11-06-2024 11:28:24 BlockChain.py: line 111 | [20240611112441877236] validated. This TX is sent by z.
+11-06-2024 11:28:24 BlockChain.py: line 111 | [20240611112613421671] validated. This TX is sent by z.
+11-06-2024 11:28:24 BlockChain.py: line 111 | [20240611112639483363] validated. This TX is sent by z.
+11-06-2024 11:28:24 BlockChain.py: line 111 | [20240611112534150606] validated. This TX is sent by z.
+11-06-2024 11:28:24 GCBlock.py: line 83 | Reward Tx [20240611111951313142] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 GCBlock.py: line 83 | Reward Tx [20240611112000654138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 GCBlock.py: line 83 | Reward Tx [20240611112005412151] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 GCBlock.py: line 83 | Reward Tx [20240611112008270138] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 GCBlock.py: line 83 | Reward Tx [20240611112015129147] validated. This TX is a Signup Reward.
+11-06-2024 11:28:24 goodchain.py: line 52 | Reward Tx [20240611112824799515] validated. This TX is a Mining Reward.
+11-06-2024 11:31:04 goodchain.py: line 127 | Reward Tx [20240611112824799515] validated. This TX is a Mining Reward.
+11-06-2024 11:31:14 goodchain.py: line 127 | Reward Tx [20240611112824799515] validated. This TX is a Mining Reward.

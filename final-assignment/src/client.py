@@ -10,7 +10,7 @@ class ClientRequest:
         return pickle.dumps({'type': self.type, 'data': self.data})
 
 def send_data(type, data):
-    host, port = 'localhost', 65433
+    host, port = 'localhost', 5005
     request = ClientRequest(type=type, data=data)
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
         sock.connect((host, port))

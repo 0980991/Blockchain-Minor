@@ -70,7 +70,7 @@ class GCBlock:
 
     def validate(self):
         for tx in self.transactions:
-            if not tx.isValid(self.previous_block):
+            if not tx.isValid(self.previous_block): #Prev block is used for validating mining reward amount
                 return False
         # 2. Check if previous
         if self.previous_block == None:
@@ -129,5 +129,4 @@ class GCBlock:
                 string += ", "
         string += f"\n{(64*'-')}\n"
 
-        # string += f"{(64*'-')}\nValidation Flags: {str(self.validation_flags[0][0])}, {str(self.validation_flags[1][0])}, {str(self.validation_flags[2][0])}\n{(64*'-')}\n"
         return string

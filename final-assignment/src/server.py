@@ -66,7 +66,7 @@ def handle_request(message):
         print(f'Error handling request: {e}')
         return f'Failed: {str(e)}'
 
-def start_server(host='localhost', port=65432):
+def start_server(host='localhost', port=5006):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     lsock.bind((host, port))
     lsock.listen()

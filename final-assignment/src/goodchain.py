@@ -67,6 +67,10 @@ class GoodChainApp():
             self.options[choice][0]()
 
     def defaultNodeActions(self):
+        # 1. Validate latest mined block
+        # 2. Delete block if marked invalid
+        # 3. Purge invalid tx in pool (validates chain)
+        
         # Perform default node actions:
         # 1. Validate newly mined block if necessary and if not mined by user and user hasnt already validated the block
         if not self.blockchain.latest_block.getValidationBools().count(True) > 2 and self.blockchain.latest_block.mined_by != self.user.username and not self.blockchain.latest_block.userHasAlreadyValidated(self.user.username):
@@ -84,15 +88,17 @@ class GoodChainApp():
                             receiver_pem_public_key = self.accounts.publicKeyFromUsername(receiver_username)
                             reward_sum = self.blockchain.latest_block.getRewardSum()
                             tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(receiver_pem_public_key, reward_sum, receiver_username)])
-                            self.tx_pool.add(tx_reward)
-                            self.tx_pool.sort()
-                            self.tx_pool.save()
+                            # Verify tx before adding to pool.
+                            if tx_reward.isValid(self.blockchain.latest_block):
+                                self.tx_pool.add(tx_reward)
+                                self.tx_pool.sort()
+                                self.tx_pool.save()
 
-                            # Update the current user balance in case to reflect the transactions in the newly accepted block
-                            self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
+                                # Update the current user balance in case to reflect the transactions in the newly accepted block
+                                self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
 
-                            notification_msg = f"You have created a reward transaction for {self.blockchain.latest_block.mined_by} for mining Block [{self.blockchain.latest_block.id}]"
-                            self.notifications.append(notification_msg)
+                                notification_msg = f"You have created a reward transaction for {self.blockchain.latest_block.mined_by} for mining Block [{self.blockchain.latest_block.id}]"
+                                self.notifications.append(notification_msg)
                     else:
                         self.blockchain.latest_block.validation_flags[i] = [False, self.user.username]
                         notification_msg = f"You have invalidated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
@@ -118,7 +124,8 @@ class GoodChainApp():
 
 
         # 3. Remove any INVALiD transactions in pool (Detects tampering since a tx can only be added to the pool if it is valid)
-        removed_tx_ids, user_return_sum = self.tx_pool.purgeInvalidUserTx(self.user.pem_public_key)
+        removed_tx_ids, user_return_sum = self.tx_pool.purgeInvalidUserTx(self.user.pem_public_key, self.blockchain.latest_block)
+
         if removed_tx_ids != []:
             notification_msg = f"Your transactions: {''.join([tx_id + ', ' if index < len(removed_tx_ids) - 1 else tx_id for index, tx_id in enumerate(removed_tx_ids)])} are invalid and have been deleted from the transaction pool."
             self.notifications.append(notification_msg)
