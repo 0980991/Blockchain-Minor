@@ -62,6 +62,13 @@ class GoodChainApp():
             choice = hf.optionsMenu(f"\n{n_str}\n\nWhat would you like to do?\n(Select an option by typing 1-{len(self.options)} and pressing 'Enter'.)", self.options, prompt=self.prompt)
             self.options[choice][0]()
 
+    async def addVerification(self, username, block):
+            await client.send_data("block_verified",
+                    {
+                    "username": username,
+                    "block": block
+                    })
+
     def defaultNodeActions(self):
         # 1. Validate latest mined block
         # 2. Delete block if marked invalid
@@ -74,6 +81,7 @@ class GoodChainApp():
                 if flag[0] is None:
                     if self.blockchain.validate(): # This checks whether the latest block is valid
                         self.blockchain.latest_block.validation_flags[i] = [True, self.user.username]
+                        asyncio.run(self.addVerification(self.user.username, self.blockchain.latest_block))
                         self.blockchain.save()
                         notification_msg = f"You have validated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
                         self.notifications.append(notification_msg)
