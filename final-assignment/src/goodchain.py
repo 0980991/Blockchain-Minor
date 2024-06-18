@@ -141,7 +141,7 @@ class GoodChainApp():
         hf.enterToContinue(str(self.blockchain))
 
     async def check_nodes(self, user):
-        return await (client.send_data("logged_in", user))
+        return await client.send_data("logged_in", user)
 
     def login(self):
         self.accounts.loadUsers()
@@ -365,6 +365,9 @@ class GoodChainApp():
             print("<Currently no transactions in the blockchain!")
         hf.enterToContinue()
 
+    async def RemoveTransaction(self, tx):
+        await client.send_data("transaction_remove", tx)
+
     def userTransactions(self):
         usr_tx = self.tx_pool.getUserTransactions(self.user.pem_public_key)
         if usr_tx == []:
@@ -386,12 +389,13 @@ class GoodChainApp():
                 hf.enterToContinue("ERROR [!]: You can only delete your own transactions from the pool!")
                 return
             self.tx_pool.remove(tx_id)
+            asyncio.run(self.RemoveTransaction(tx))
             self.tx_pool.save()
             hf.enterToContinue(hf.prettyString(f"Transaction [{tx_id}]: Canceled Sucesfully!"))
             return
 
     async def mine(self, new_block):
-            await (client.send_data("block_add", new_block))
+            await client.send_data("block_add", new_block)
     
     def mineBlock(self):
         mining_allowed = self.blockchain.miningAllowed(self.tx_pool)
