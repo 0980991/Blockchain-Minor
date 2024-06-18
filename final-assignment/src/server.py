@@ -65,16 +65,13 @@ def handle_request(message, user):
             return 'Success'
         elif request['type'] == 'block_add':
             blockchain.load()
-            if request['data'].validate():
-                blockchain.check_duplicate_and_add(request['data'])
-                for transactions in request['data'].transactions:
-                    txpool.remove(transactions.id)
-                txpool.sort()
-                txpool.save()
-                blockchain.save()
-                return 'Success'
-            else:
-                return 'Invalid_block'
+            blockchain.check_duplicate_and_add(request['data'])
+            for transactions in request['data'].transactions:
+                txpool.remove(transactions.id)
+            txpool.sort()
+            txpool.save()
+            blockchain.save()
+            return 'Success'
         elif request['type'] == 'logged_in':
             if user != None and user.username != None and user.username == request['data']:
                 return True
