@@ -23,7 +23,6 @@ class BlockChain:
                 if current_block.time_stamp > block.time_stamp:
                     # Replace the current block with the new block
                     self.replace_block(current_block, block)
-                    print("duplicate block detected and replaced!!")
                 return
             current_block = current_block.previous_block
         

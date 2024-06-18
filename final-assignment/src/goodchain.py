@@ -62,6 +62,13 @@ class GoodChainApp():
             choice = hf.optionsMenu(f"\n{n_str}\n\nWhat would you like to do?\n(Select an option by typing 1-{len(self.options)} and pressing 'Enter'.)", self.options, prompt=self.prompt)
             self.options[choice][0]()
 
+    async def addVerification(self, username, block):
+            await client.send_data("block_verified",
+                    {
+                    "username": username,
+                    "block": block
+                    })
+
     def defaultNodeActions(self):
         # 1. Validate latest mined block
         # 2. Delete block if marked invalid
@@ -74,6 +81,7 @@ class GoodChainApp():
                 if flag[0] is None:
                     if self.blockchain.validate(): # This checks whether the latest block is valid
                         self.blockchain.latest_block.validation_flags[i] = [True, self.user.username]
+                        asyncio.run(self.addVerification(self.user.username, self.blockchain.latest_block))
                         self.blockchain.save()
                         notification_msg = f"You have validated flag {i+1}/3 of the latest block in the chain: Block [{self.blockchain.latest_block.id}]"
                         self.notifications.append(notification_msg)
@@ -141,7 +149,7 @@ class GoodChainApp():
         hf.enterToContinue(str(self.blockchain))
 
     async def check_nodes(self, user):
-        return await (client.send_data("logged_in", user))
+        return await client.send_data("logged_in", user)
 
     def login(self):
         self.accounts.loadUsers()
@@ -182,6 +190,13 @@ class GoodChainApp():
         self.logged_in = False
         print("\n[+] Logged Out!\n")
         self.setMenuOptions()
+        
+    async def addUser(self, sendable_user):
+            await client.send_data("user_add", sendable_user)
+
+    async def addReward(self, tx_reward):
+        await client.send_data("transaction_add", tx_reward)     
+
 
     def signUp(self):
         user_credentials = hf.readUserInput(["Enter a username:", "Enter a password:"], prompt=self.prompt)
@@ -197,13 +212,14 @@ class GoodChainApp():
             sendable_user = new_user
             sendable_user.private_key = None
             sendable_user.public_key = None
-            # client.send_data("user_add", sendable_user)
+            asyncio.run(self.addUser(sendable_user))
+
 
             tx_reward = GCTx([("REWARD", 50.0, "Signup Reward")], [(new_user.pem_public_key, 50.0, new_user.username)])
             if tx_reward.isValid():
                 self.tx_pool.add(tx_reward)
                 self.tx_pool.sort()
-                # client.send_data("transaction_add", tx_reward)
+                asyncio.run(self.addReward(tx_reward))
 
                 if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                     self.login()
@@ -269,7 +285,9 @@ class GoodChainApp():
     #         print(t)
     #     hf.enterToContinue()
 
-
+    async def addTransaction(self, tx):
+        await client.send_data("transaction_add", tx)
+    
     def transfer(self):
         valid_input = False
         back_flag = True
@@ -308,7 +326,8 @@ class GoodChainApp():
                         # REMOVE spent outputs
                         self.user.balance -= send_amount + gas_fee
                         hf.enterToContinue(f"The transaction has been added to the pool with ID: {tx.id}")
-                        # client.send_data("transaction_add", tx)
+                        asyncio.run(self.addTransaction(tx))
+
                         return
                     else:
                         return # User canceled operation
@@ -354,6 +373,9 @@ class GoodChainApp():
             print("<Currently no transactions in the blockchain!")
         hf.enterToContinue()
 
+    async def RemoveTransaction(self, tx):
+        await client.send_data("transaction_remove", tx)
+
     def userTransactions(self):
         usr_tx = self.tx_pool.getUserTransactions(self.user.pem_public_key)
         if usr_tx == []:
@@ -375,10 +397,14 @@ class GoodChainApp():
                 hf.enterToContinue("ERROR [!]: You can only delete your own transactions from the pool!")
                 return
             self.tx_pool.remove(tx_id)
+            asyncio.run(self.RemoveTransaction(tx))
             self.tx_pool.save()
             hf.enterToContinue(hf.prettyString(f"Transaction [{tx_id}]: Canceled Sucesfully!"))
             return
 
+    async def mine(self, new_block):
+            await client.send_data("block_add", new_block)
+    
     def mineBlock(self):
         mining_allowed = self.blockchain.miningAllowed(self.tx_pool)
         if mining_allowed:
@@ -395,7 +421,8 @@ class GoodChainApp():
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
-            client.send_data("block_add", new_block)
+            
+            asyncio.run(self.mine(new_block))
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")
             self.setMenuOptions()
@@ -403,6 +430,13 @@ class GoodChainApp():
             return end_time
         else:
             hf.enterToContinue()
+
+    async def changepw(self, username, hashed_pw):
+            await client.send_data("user_changepw",
+                    {
+                    "username": self.user.username,
+                    "password": hashed_pw
+                    })
 
     def viewAccountDetails(self):
         while True:
@@ -415,11 +449,7 @@ class GoodChainApp():
                     hashed_pw = self.accounts.hash_string(new_pw)
                     self.user.pw_hash = hashed_pw
                     dbi.updatePwHash(self.user.username, hashed_pw)
-                    client.send_data("user_changepw",
-                    {
-                    "username": self.user.username,
-                    "password": hashed_pw
-                    })
+                    asyncio.run(self.changepw(self.user.username, hashed_pw))
 
                     hf.enterToContinue(hf.prettyString("Password sucesfully updated!"))
 

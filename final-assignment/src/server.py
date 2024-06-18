@@ -65,21 +65,49 @@ def handle_request(message, user):
             return 'Success'
         elif request['type'] == 'block_add':
             blockchain.load()
-            if request['data'].validate():
-                blockchain.check_duplicate_and_add(request['data'])
-                for transactions in request['data'].transactions:
-                    txpool.remove(transactions.id)
-                txpool.sort()
-                txpool.save()
-                blockchain.save()
-                return 'Success'
-            else:
-                return 'Invalid_block'
+            blockchain.check_duplicate_and_add(request['data'])
+            for transactions in request['data'].transactions:
+                txpool.remove(transactions.id)
+            txpool.sort()
+            txpool.save()
+            blockchain.save()
+            return 'Success'
         elif request['type'] == 'logged_in':
             if user != None and user.username != None and user.username == request['data']:
                 return True
             else:
                 return False
+        elif request['type'] == 'block_verified':
+            blockchain.load()
+            current_block = blockchain.latest_block
+
+            while current_block is not None:
+                if current_block.id == request['data']["block"].id:
+                    break
+                current_block = current_block.previous_block
+
+            if current_block is None:
+                return f"Block with ID {request['data']['block'].id} not found."
+
+            # Get the username that verified it
+            username = request['data']["username"]
+
+            # Check if the username has already validated this block
+            for flag in current_block.validation_flags:
+                if flag[1] == username:
+                    return f"User {username} has already validated this block."
+
+            # Add the validation to the current block
+            for i in range(len(current_block.validation_flags)):
+                if current_block.validation_flags[i][0] is None:
+                    current_block.validation_flags[i] = [True, username]
+                    break
+            else:
+                return f"Block with ID {request['data']['block'].id} already has all validation flags set."
+
+            # Save the updated blockchain
+            blockchain.save()
+            return "Validation flag added and blockchain saved."
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')
