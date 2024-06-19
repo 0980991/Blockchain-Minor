@@ -77,7 +77,7 @@ class GoodChainApp():
         # 1. Validate latest mined block
         # 2. Delete block if marked invalid
         # 3. Purge invalid tx in pool (validates chain)
-        
+
         # Perform default node actions:
         # 1. Validate newly mined block if necessary and if not mined by user and user hasnt already validated the block
         if not self.blockchain.latest_block.getValidationBools().count(True) > 2 and self.blockchain.latest_block.mined_by != self.user.username and not self.blockchain.latest_block.userHasAlreadyValidated(self.user.username):
@@ -96,9 +96,9 @@ class GoodChainApp():
                             receiver_pem_public_key = self.accounts.publicKeyFromUsername(receiver_username)
                             reward_sum = self.blockchain.latest_block.getRewardSum()
                             tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(receiver_pem_public_key, reward_sum, receiver_username)])
-                            asyncio.run(self.addTransaction(tx_reward))
                             # Verify tx before adding to pool.
                             if tx_reward.isValid(self.blockchain.latest_block):
+                                asyncio.run(self.addTransaction(tx_reward))
                                 self.tx_pool.add(tx_reward)
                                 self.tx_pool.sort()
                                 self.tx_pool.save()
@@ -194,9 +194,9 @@ class GoodChainApp():
         self.logged_in = False
         print("\n[+] Logged Out!\n")
         self.setMenuOptions()
-        
+
     async def addUser(self, sendable_user):
-        await client.send_data("user_add", sendable_user)  
+        await client.send_data("user_add", sendable_user)
 
     def signUp(self):
         user_credentials = hf.readUserInput(["Enter a username:", "Enter a password:"], prompt=self.prompt)
@@ -287,7 +287,7 @@ class GoodChainApp():
 
     async def addTransaction(self, tx):
         await client.send_data("transaction_add", tx)
-    
+
     def transfer(self):
         valid_input = False
         back_flag = True
@@ -405,7 +405,7 @@ class GoodChainApp():
 
     async def mine(self, new_block):
             await client.send_data("block_add", new_block)
-    
+
     def mineBlock(self):
         self.tx_pool.load()
         self.tx_pool.sort()
@@ -424,7 +424,7 @@ class GoodChainApp():
             self.blockchain.save()
             self.tx_pool.removeTx()
             self.tx_pool.save()
-            
+
             asyncio.run(self.mine(new_block))
 
             self.notifications.append(f"You have mined the latest block [BLOCK {new_block.id}]\nA transaction for your mining reward of {new_block.getRewardSum()} will be added to the transaction pool when all flags have been validated.")

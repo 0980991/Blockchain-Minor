@@ -43,21 +43,15 @@ def handle_request(message, app_instance):
         txpool = TxPool()
         blockchain = BlockChain()
         if request['type'] == 'transaction_add':
-            if request['data'].isValid():
-                txpool.add(request['data'])
-                txpool.sort()
-                txpool.save()
-                response = 'Success'
-            else:
-                response = 'invalid transaction'
+            txpool.add(request['data'])
+            txpool.sort()
+            txpool.save()
+            response = 'Success'
         elif request['type'] == 'transaction_remove':
-            if request['data'].isValid():
-                txpool.remove(request['data'].id)
-                txpool.sort()
-                txpool.save()
-                response = 'Success'
-            else:
-                response = 'invalid transaction'
+            txpool.remove(request['data'].id)
+            txpool.sort()
+            txpool.save()
+            response = 'Success'
         elif request['type'] == 'user_add':
             dbi.insertUser(request['data'])
             response = 'Success'
@@ -116,10 +110,10 @@ def handle_request(message, app_instance):
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')
             response = f'Failed: type {request["type"]} is not recognized'
-        
+
         refresh_app_state(app_instance)
         return response
-        
+
     except Exception as e:
         print(f'Error handling request: {e}')
         return f'Failed: {str(e)}'
