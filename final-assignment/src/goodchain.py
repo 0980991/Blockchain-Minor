@@ -51,7 +51,7 @@ class GoodChainApp():
             else:
                 if self.blockchain.miningAllowed(self.tx_pool, False):
                     self.notifications.append("[!] A new block can be mined")
-            self.notifications.append(f"Number of blocks in chain: {self.blockchain.latest_block.id}")
+            self.notifications.append(f"Number of blocks in chain: {self.blockchain.latest_block.id + 1}")
             self.notifications.append(f"Number of transactions in chain: {self.blockchain.getTxAmount()}")
             n_str = "NOTIFICATIONS:\n"
             for i, notification in enumerate(self.notifications):
