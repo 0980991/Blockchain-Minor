@@ -12,7 +12,6 @@ class ClientRequest:
 
 
 async def send_data(type, data):
-
     host, port = 'localhost', 5005
     request = ClientRequest(type=type, data=data)
     try:

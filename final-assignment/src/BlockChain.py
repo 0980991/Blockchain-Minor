@@ -93,8 +93,8 @@ class BlockChain:
             self.latest_block = latest_block
         except FileNotFoundError:
             hf.enterToContinue(f"Block chain data file not located in {self.data_path}! A new blockchain file will be created.")
-
             self.latest_block = GCBlock([], None)
+            self.save()
         except UnpicklingError:
             hf.enterToContinue("BlockChain.dat has been corrupted and can no longer be read.\nDelete the file and restart the program!")
             sys.exit()
