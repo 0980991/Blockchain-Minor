@@ -22,4 +22,4 @@ class GCUser:
             self.public_key = Signature.deserializePublicKey(pem_public_key)
 
     def __str__(self):
-        return f"User {username}:\n{64*'='}\n{self.pem_public_key}"
+        return f"User {self.username}:\n{64*'='}\n{self.pem_public_key}"
