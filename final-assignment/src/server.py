@@ -108,6 +108,9 @@ def handle_request(message, user):
             # Save the updated blockchain
             blockchain.save()
             return "Validation flag added and blockchain saved."
+        elif request['type'] == 'sync':
+            blockchain.load()
+            return blockchain.latest_block
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')

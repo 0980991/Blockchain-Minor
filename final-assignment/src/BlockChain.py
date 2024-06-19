@@ -5,6 +5,8 @@ from pickle import UnpicklingError
 import HelperFunctions as hf
 import sys
 import os
+import client
+import asyncio
 class BlockChain:
 
     def __init__(self):
@@ -85,6 +87,9 @@ class BlockChain:
 
         return user_transactions
 
+    async def sync(self):
+        return await client.send_data("sync","")     
+
     def load(self):
         try:
             fh = open(self.data_path, 'rb')
@@ -92,8 +97,13 @@ class BlockChain:
             fh.close()
             self.latest_block = latest_block
         except FileNotFoundError:
-            hf.enterToContinue(f"Block chain data file not located in {self.data_path}! A new blockchain file will be created.")
-            self.latest_block = GCBlock([], None)
+            blockchain = asyncio.run(self.sync())
+            print(blockchain)
+            if blockchain:
+                self.latest_block = blockchain
+            else:
+                hf.enterToContinue(f"Block chain data file not located in {self.data_path}! A new blockchain file will be created.")
+                self.latest_block = GCBlock([], None)
             self.save()
         except UnpicklingError:
             hf.enterToContinue("BlockChain.dat has been corrupted and can no longer be read.\nDelete the file and restart the program!")
