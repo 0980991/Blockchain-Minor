@@ -5,7 +5,7 @@ import pickle
 from TxPool import TxPool
 from BlockChain import BlockChain
 from DbInterface import DbInterface as dbi
-import GCAccounts
+from GCAccounts import GCAccounts
 
 selector = selectors.DefaultSelector()
 data = []
