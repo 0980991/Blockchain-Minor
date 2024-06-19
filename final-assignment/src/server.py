@@ -5,6 +5,7 @@ import pickle
 from TxPool import TxPool
 from BlockChain import BlockChain
 from DbInterface import DbInterface as dbi
+import GCAccounts
 
 selector = selectors.DefaultSelector()
 data = []
@@ -17,14 +18,14 @@ def accept_wrapper(sock):
     events = selectors.EVENT_READ | selectors.EVENT_WRITE
     selector.register(conn, events, data=data)
 
-def service_connection(key, mask, user):
+def service_connection(key, mask, app_instance):
     sock = key.fileobj
     data = key.data
     if mask & selectors.EVENT_READ:
         recv_data = sock.recv(16384)
         if recv_data:
             message = pickle.loads(recv_data)
-            response = handle_request(message, user)
+            response = handle_request(message, app_instance)
             data.outb += pickle.dumps(response)
         else:
             # print(f'Closing connection to {data.addr}')
@@ -35,8 +36,8 @@ def service_connection(key, mask, user):
             sent = sock.send(data.outb)
             data.outb = data.outb[sent:]
 
-def handle_request(message, user):
-    global data
+def handle_request(message, app_instance):
+    user = app_instance.user
     try:
         request = message  # Using the unpickled data directly
         txpool = TxPool()
@@ -46,23 +47,23 @@ def handle_request(message, user):
                 txpool.add(request['data'])
                 txpool.sort()
                 txpool.save()
-                return 'Success'
+                response = 'Success'
             else:
-                return 'invalid transaction'
+                response = 'invalid transaction'
         elif request['type'] == 'transaction_remove':
             if request['data'].isValid():
                 txpool.remove(request['data'].id)
                 txpool.sort()
                 txpool.save()
-                return 'Success'
+                response = 'Success'
             else:
-                return 'invalid transaction'
+                response = 'invalid transaction'
         elif request['type'] == 'user_add':
             dbi.insertUser(request['data'])
-            return 'Success'
+            response = 'Success'
         elif request['type'] == 'user_changepw':
             dbi.updatePwHash(request['data']['username'], request['data']['password'])
-            return 'Success'
+            response = 'Success'
         elif request['type'] == 'block_add':
             blockchain.load()
             blockchain.check_duplicate_and_add(request['data'])
@@ -71,12 +72,12 @@ def handle_request(message, user):
             txpool.sort()
             txpool.save()
             blockchain.save()
-            return 'Success'
+            response = 'Success'
         elif request['type'] == 'logged_in':
             if user != None and user.username != None and user.username == request['data']:
-                return True
+                response = True
             else:
-                return False
+                response = False
         elif request['type'] == 'block_verified':
             blockchain.load()
             current_block = blockchain.latest_block
@@ -87,7 +88,7 @@ def handle_request(message, user):
                 current_block = current_block.previous_block
 
             if current_block is None:
-                return f"Block with ID {request['data']['block'].id} not found."
+                response = f"Block with ID {request['data']['block'].id} not found."
 
             # Get the username that verified it
             username = request['data']["username"]
@@ -95,7 +96,7 @@ def handle_request(message, user):
             # Check if the username has already validated this block
             for flag in current_block.validation_flags:
                 if flag[1] == username:
-                    return f"User {username} has already validated this block."
+                    response = f"User {username} has already validated this block."
 
             # Add the validation to the current block
             for i in range(len(current_block.validation_flags)):
@@ -103,22 +104,31 @@ def handle_request(message, user):
                     current_block.validation_flags[i] = [True, username]
                     break
             else:
-                return f"Block with ID {request['data']['block'].id} already has all validation flags set."
+                response = f"Block with ID {request['data']['block'].id} already has all validation flags set."
 
             # Save the updated blockchain
             blockchain.save()
-            return "Validation flag added and blockchain saved."
+            response = "Validation flag added and blockchain saved."
         elif request['type'] == "blockchain_sync":
             blockchain.load()
-            return blockchain.latest_block
+            response = blockchain.latest_block
         else:
             print(f'type {request["type"]} is not recognized')
             print(f'Current data: {data}')
-            return f'Failed: type {request["type"]} is not recognized'
+            response = f'Failed: type {request["type"]} is not recognized'
+        
+        refresh_app_state(app_instance)
+        return response
         
     except Exception as e:
         print(f'Error handling request: {e}')
         return f'Failed: {str(e)}'
+
+def refresh_app_state(app_instance):
+    app_instance.blockchain.load()
+    app_instance.tx_pool.load()
+    app_instance.tx_pool.sort()
+    app_instance.accounts = GCAccounts()
 
 def start_server(app_instance, host='localhost', port=5006):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -135,8 +145,7 @@ def start_server(app_instance, host='localhost', port=5006):
                 if key.data is None:
                     accept_wrapper(key.fileobj)
                 else:
-                    user = app_instance.user
-                    service_connection(key, mask, user)
+                    service_connection(key, mask, app_instance)
     except KeyboardInterrupt:
         print("Caught keyboard interrupt, exiting")
     finally:
