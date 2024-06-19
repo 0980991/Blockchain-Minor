@@ -98,7 +98,6 @@ class BlockChain:
             self.latest_block = latest_block
         except FileNotFoundError:
             blockchain = asyncio.run(self.sync())
-            print(blockchain)
             if blockchain:
                 self.latest_block = blockchain
             else:
