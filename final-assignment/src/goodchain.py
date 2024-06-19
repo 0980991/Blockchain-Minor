@@ -155,7 +155,7 @@ class GoodChainApp():
         return await client.send_data("logged_in", user)
 
     def login(self):
-        self.accounts.loadUsers()
+        self.accounts = GCAccounts()
         user_credentials = hf.readUserInput(["Enter your username:", "Enter your password:"], prompt=self.prompt)
         if user_credentials == []:
             return
