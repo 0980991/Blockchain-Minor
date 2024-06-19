@@ -49,6 +49,7 @@ class GoodChainApp():
             print(self.getBanner())
             if self.logged_in:
                     self.defaultNodeActions()
+                    self.user.balance = self.blockchain.calculateBalance(self.user.username, self.tx_pool)
             if self.blockchain.latest_block.getValidationBools().count(True) < 3:
                 self.notifications.append(f"The most recently mined block {self.blockchain.latest_block.id} is still pending for verification. Flags: {self.blockchain.latest_block.getValidationBools().count(True)}/3")
             else:
