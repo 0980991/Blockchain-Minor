@@ -96,6 +96,7 @@ class GoodChainApp():
                             receiver_pem_public_key = self.accounts.publicKeyFromUsername(receiver_username)
                             reward_sum = self.blockchain.latest_block.getRewardSum()
                             tx_reward = GCTx([("REWARD", reward_sum, "Mining Reward")], [(receiver_pem_public_key, reward_sum, receiver_username)])
+                            asyncio.run(self.addTransaction(tx_reward))
                             # Verify tx before adding to pool.
                             if tx_reward.isValid(self.blockchain.latest_block):
                                 self.tx_pool.add(tx_reward)
@@ -195,11 +196,7 @@ class GoodChainApp():
         self.setMenuOptions()
         
     async def addUser(self, sendable_user):
-        await client.send_data("user_add", sendable_user)
-
-    async def addReward(self, tx_reward):
-        await client.send_data("transaction_add", tx_reward)     
-
+        await client.send_data("user_add", sendable_user)  
 
     def signUp(self):
         user_credentials = hf.readUserInput(["Enter a username:", "Enter a password:"], prompt=self.prompt)
@@ -222,7 +219,7 @@ class GoodChainApp():
             if tx_reward.isValid():
                 self.tx_pool.add(tx_reward)
                 self.tx_pool.sort()
-                asyncio.run(self.addReward(tx_reward))
+                asyncio.run(self.addTransaction(tx_reward))
 
                 if hf.yesNoInput("\n[+] Signup Successful!\nDo you want to login now?"):
                     self.login()
