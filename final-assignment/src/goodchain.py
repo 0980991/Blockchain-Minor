@@ -43,6 +43,9 @@ class GoodChainApp():
 
     def start(self):
         while True:
+            self.blockchain.load()
+            self.tx_pool.load()
+            self.tx_pool.sort()
             print(self.getBanner())
             if self.logged_in:
                     self.defaultNodeActions()
