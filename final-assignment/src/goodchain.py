@@ -192,7 +192,7 @@ class GoodChainApp():
         self.setMenuOptions()
         
     async def addUser(self, sendable_user):
-            await client.send_data("user_add", sendable_user)
+        await client.send_data("user_add", sendable_user)
 
     async def addReward(self, tx_reward):
         await client.send_data("transaction_add", tx_reward)     
@@ -349,6 +349,7 @@ class GoodChainApp():
 
     def viewTransactionPool(self):
         self.tx_pool.load()
+        self.tx_pool.sort()
         print(self.tx_pool)
         hf.enterToContinue()
 
@@ -406,6 +407,8 @@ class GoodChainApp():
             await client.send_data("block_add", new_block)
     
     def mineBlock(self):
+        self.tx_pool.load()
+        self.tx_pool.sort()
         mining_allowed = self.blockchain.miningAllowed(self.tx_pool)
         if mining_allowed:
             prev_block = self.blockchain.latest_block
