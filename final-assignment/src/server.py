@@ -129,6 +129,8 @@ def refresh_app_state(app_instance):
     app_instance.tx_pool.load()
     app_instance.tx_pool.sort()
     app_instance.accounts = GCAccounts()
+    if app_instance.logged_in:
+        app_instance.user.balance = app_instance.blockchain.calculateBalance(app_instance.user.username, app_instance.tx_pool)
 
 def start_server(app_instance, host='localhost', port=5006):
     lsock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
