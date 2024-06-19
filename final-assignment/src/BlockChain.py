@@ -88,7 +88,7 @@ class BlockChain:
         return user_transactions
 
     async def sync(self):
-        return await client.send_data("sync","")     
+        return await client.send_data("blockchain_sync","")     
 
     def load(self):
         try:
